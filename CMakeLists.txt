@@ -1,0 +1,48 @@
+cmake_minimum_required(VERSION 3.15)
+
+project(OpenMap)
+
+
+add_executable(
+        OpenMap
+        src/main.cpp
+        libs/raylib-gizmo/raygizmo.c
+)
+
+target_include_directories(
+        OpenMap
+        PUBLIC .
+        PUBLIC libs/raylib-gizmo
+        PUBLIC libs/raylib/include
+)
+
+
+if(WIN32)
+
+        target_link_libraries(
+                OpenMap
+                ${PROJECT_SOURCE_DIR}/libs/raylib/lib/libraylib_windows.a
+                ${PROJECT_SOURCE_DIR}/libs/lua/lib/liblua_windows.a
+                winmm
+        )
+
+elseif(APPLE)
+
+        target_link_libraries(
+                OpenMap
+                /libs/raylib/lib/libraylib_macos.a
+                /libs/lua/lib/liblua_macos.a
+                "-framework IOKit"
+                "-framework Cocoa"
+                "-framework OpenGL"
+        )
+
+elseif(UNIX)
+
+        target_link_libraries(
+                OpenMap
+                /libs/raylib/lib/libraylib_linux.a
+                /libs/lua/lib/liblua_linux.a
+        )
+
+endif()

@@ -1,0 +1,7 @@
+- LoadTextureFromImage -> DrawTexture -> UnloadTexture
+- Define Keycode's in IInput.hpp
+- ILua.hpp
+- MapObject struct
+- ^ main std::vector<MapObject>
+
+https://json.nlohmann.me/features/arbitrary_types/#basic-usage
