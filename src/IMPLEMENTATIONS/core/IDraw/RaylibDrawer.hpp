@@ -6,6 +6,7 @@
 #include <libs/raylib/include/raylib.h>
 #define RAYMATH_STATIC_INLINE
 #include <libs/raylib/include/raymath.h>
+#include <libs/raylib/include/rlgl.h>
 
 
 class RaylibDrawer: public IDraw {
@@ -182,16 +183,9 @@ public:
                         )
                 );
 
-                // One half of X- billboard/sprite
+                rlDisableBackfaceCulling();
                 DrawMesh(mesh, material, transform);
-
-                transform = MatrixMultiply(
-                        transform,
-                        MatrixRotateX(PI/2) // TEMP; TEST
-                );
-
-                // Second half of X- billboard/sprite
-                DrawMesh(mesh, material, transform);
+                rlEnableBackfaceCulling();
 
                 UnloadMesh(mesh);
 

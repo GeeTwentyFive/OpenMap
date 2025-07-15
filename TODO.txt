@@ -1,4 +1,4 @@
-- LoadTextureFromImage -> DrawTexture -> UnloadTexture
+- LoadSprite -> make mesh, UnloadSprite -> unload mesh
 - Define Keycode's in IInput.hpp
 - ILua.hpp
 - MapObject struct
