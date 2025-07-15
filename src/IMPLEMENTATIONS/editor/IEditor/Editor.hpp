@@ -14,7 +14,7 @@ public:
         ) override {
 
                 //IDraw::Model* test_model = drawer.LoadModel("viking_room.obj");
-                IDraw::Sprite* test_sprite = drawer.LoadSprite("viking_room.png");
+                IDraw::Model* test_sprite = drawer.LoadSprite("viking_room.png");
                 float test_model_position[3] = {0.0f, 0.0f, 10.0f};
                 float test_model_rotation[3] = {0.0f, 0.0f, 0.0f};
                 float test_model_scale[3] = {1.0f, 1.0f, 1.0f};
@@ -23,8 +23,6 @@ public:
 
                         drawer.BeginDrawing();
                         {
-
-                                DrawFPS(10, 10);
 
                                 drawer.Draw(
                                         test_sprite,

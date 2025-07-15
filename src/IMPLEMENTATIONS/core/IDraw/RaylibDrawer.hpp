@@ -54,19 +54,28 @@ public:
                 *model = ::LoadModel(target_file_path);
                 return (Model*)model;
         }
-        inline void UnloadModel(Model* model) override {
-                ::UnloadModel(*(::Model*)model);
-                delete model;
+
+        inline Model* LoadSprite(const char* target_file_path) override {
+
+                Texture2D sprite = LoadTexture(target_file_path);
+
+                Mesh mesh = GenMeshPlane(
+                        sprite.width,
+                        sprite.height,
+                        1, 1
+                );
+
+                ::Model* model = new ::Model;
+                *model = LoadModelFromMesh(mesh);
+                model->materials->maps[MATERIAL_MAP_DIFFUSE].texture = sprite;
+
+                return (Model*)model; // TEMP; TEST
+
         }
 
-        inline Sprite* LoadSprite(const char* target_file_path) override {
-                Texture2D* sprite = new Texture2D;
-                *sprite = LoadTexture(target_file_path);
-                return (Sprite*)sprite;
-        }
-        inline void UnloadSprite(Sprite* sprite) override {
-                UnloadTexture(*(Texture2D*)sprite);
-                delete sprite;
+        inline void Unload(Model* model) override {
+                ::UnloadModel(*(::Model*)model);
+                delete model;
         }
 
 
@@ -74,7 +83,7 @@ public:
                 return ::WindowShouldClose();
         }
 
-        inline void BeginDrawing(int clear_color = 0xffffffff) override {
+        inline void BeginDrawing(int clear_color = 0x000000ff) override {
                 UpdateCamera(&camera, CAMERA_FREE);
                 ::BeginDrawing();
                 ClearBackground(
@@ -131,63 +140,6 @@ public:
                                 (unsigned char)((color_tint & 0x000000ff))
                         }
                 );
-
-                EndMode3D();
-        }
-
-        inline void Draw(
-                Sprite* sprite,
-                float position[3],
-                float rotation[3],
-                float scale[3],
-                int color_tint = 0xffffffff
-        ) override {
-                BeginMode3D(camera);
-
-                Texture2D _sprite = *(Texture2D*)sprite;
-
-                Mesh mesh = GenMeshPlane(
-                        _sprite.width,
-                        _sprite.height,
-                        1, 1
-                );
-
-                Material material = LoadMaterialDefault();
-                material.maps[MATERIAL_MAP_DIFFUSE].texture = _sprite;
-
-                Matrix transform = MatrixIdentity();
-                transform = MatrixMultiply(
-                        transform,
-                        MatrixScale(
-                                scale[0],
-                                scale[1],
-                                scale[2]
-                        )
-                );
-                transform = MatrixMultiply(
-                        transform,
-                        QuaternionToMatrix(
-                                QuaternionFromEuler(
-                                        rotation[0],
-                                        rotation[1],
-                                        rotation[2]
-                                )
-                        )
-                );
-                transform = MatrixMultiply(
-                        transform,
-                        MatrixTranslate(
-                                position[0],
-                                position[1],
-                                position[2]
-                        )
-                );
-
-                rlDisableBackfaceCulling();
-                DrawMesh(mesh, material, transform);
-                rlEnableBackfaceCulling();
-
-                UnloadMesh(mesh);
 
                 EndMode3D();
         }

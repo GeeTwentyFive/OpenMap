@@ -1,4 +1,5 @@
-- LoadSprite -> make mesh, UnloadSprite -> unload mesh
+- Only UpdateCamera() when RMB is held down (+ LOCK CURSOR)
+- Change camera move speed with scroll wheel
 - Define Keycode's in IInput.hpp
 - ILua.hpp
 - MapObject struct
