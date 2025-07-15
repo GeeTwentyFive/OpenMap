@@ -1,8 +1,9 @@
 - Only UpdateCamera() when RMB is held down (+ LOCK CURSOR)
-- Change camera move speed with scroll wheel
+- Change camera move speed with scroll wheel <- change to UpdateCameraPro()?
 - Define Keycode's in IInput.hpp
 - ILua.hpp
 - MapObject struct
 - ^ main std::vector<MapObject>
+- https://www.raylib.com/examples/core/loader.html?name=core_3d_picking + GetMeshBoundingBox()
 
 https://json.nlohmann.me/features/arbitrary_types/#basic-usage
