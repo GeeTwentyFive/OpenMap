@@ -2,15 +2,44 @@
 #define _OPENMAP_EDITOR_HPP
 
 #include <src/INTERFACES/editor/IEditor.hpp>
-// TODO
+
+#include <libs/raylib/include/raylib.h>
 
 
-class Editor: IEditor {
+class Editor: public IEditor {
 
 public:
-        int Run(IDraw drawer) override {
+        int Run(
+                IDraw&& drawer
+        ) override {
 
-                // TODO
+                //IDraw::Model* test_model = drawer.LoadModel("viking_room.obj");
+                IDraw::Sprite* test_sprite = drawer.LoadSprite("viking_room.png");
+                float test_model_position[3] = {0.0f, 0.0f, 10.0f};
+                float test_model_rotation[3] = {0.0f, 0.0f, 0.0f};
+                float test_model_scale[3] = {1.0f, 1.0f, 1.0f};
+
+                while (!drawer.WindowShouldClose()) {
+
+                        drawer.BeginDrawing();
+                        {
+
+                                DrawFPS(10, 10);
+
+                                drawer.Draw(
+                                        test_sprite,
+                                        test_model_position,
+                                        test_model_rotation,
+                                        test_model_scale,
+                                        0x808080ff
+                                );
+
+                        }
+                        drawer.EndDrawing();
+
+                }
+
+                return 0;
 
         }
 

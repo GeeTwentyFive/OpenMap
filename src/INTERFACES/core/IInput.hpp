@@ -14,9 +14,11 @@ public:
         virtual void Map(
                 Keycode keycode,
                 void(*callback)(void)
-        );
+        ) = 0;
 
-        virtual std::tuple<int, int> GetCursorPos();
+        virtual std::tuple<int, int> GetCursorPos() = 0;
+
+        virtual ~IInput() = default;
 
 };
 

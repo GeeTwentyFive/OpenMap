@@ -3,101 +3,106 @@
 
 #include <src/INTERFACES/core/IDraw.hpp>
 
-namespace rl {
 #include <libs/raylib/include/raylib.h>
-namespace math {
+#define RAYMATH_STATIC_INLINE
 #include <libs/raylib/include/raymath.h>
-}
-}
 
 
-class RaylibDrawer: IDraw {
+class RaylibDrawer: public IDraw {
 
 private:
-        rl::Camera camera;
+        Camera camera;
 
 public:
-        RaylibDrawer(
-                rl::ConfigFlags window_config_flags = rl::FLAG_MSAA_4X_HINT,
+        inline RaylibDrawer(
+                ConfigFlags window_config_flags = FLAG_MSAA_4X_HINT,
                 int window_min_width = 1280,
                 int window_min_height = 720,
                 float camera_fov = 90
         ) {
 
-                rl::SetConfigFlags(window_config_flags);
+                SetConfigFlags(window_config_flags);
 
-                rl::InitWindow(
+                InitWindow(
                         window_min_width,
                         window_min_height,
                         ""
                 );
 
-                rl::SetTargetFPS(
-                        rl::GetMonitorRefreshRate(rl::GetCurrentMonitor()) * 2
+                SetTargetFPS(
+                        GetMonitorRefreshRate(GetCurrentMonitor()) * 2
                 );
 
-                rl::SetWindowMinSize(window_min_width, window_min_height);
+                SetWindowMinSize(window_min_width, window_min_height);
 
-                camera.position = rl::Vector3{0.0f, 0.0f, 0.0f};
-                camera.target = rl::Vector3{0.0f, 0.0f, 1.0f};
-                camera.up = rl::Vector3{0.0f, 1.0f, 0.0f};
+                camera.position = Vector3{0.0f, 0.0f, 0.0f};
+                camera.target = Vector3{0.0f, 0.0f, 1.0f};
+                camera.up = Vector3{0.0f, 1.0f, 0.0f};
                 camera.fovy = camera_fov;
-                camera.projection = rl::CAMERA_PERSPECTIVE;
+                camera.projection = CAMERA_PERSPECTIVE;
 
         }
 
-        ~RaylibDrawer() {
-                rl::CloseWindow();
+        inline ~RaylibDrawer() {
+                CloseWindow();
         }
 
 
-        Model* LoadModel(const char* target_file_path) override {
-                rl::Model* model = new rl::Model;
-                *model = rl::LoadModel(target_file_path);
+        inline Model* LoadModel(const char* target_file_path) override {
+                ::Model* model = new ::Model;
+                *model = ::LoadModel(target_file_path);
                 return (Model*)model;
         }
-        void UnloadModel(Model* model) override {
-                rl::UnloadModel(*(rl::Model*)model);
-                delete[] model;
+        inline void UnloadModel(Model* model) override {
+                ::UnloadModel(*(::Model*)model);
+                delete model;
         }
 
-        Sprite* LoadSprite(const char* target_file_path) override {
-                rl::Texture2D* sprite = new rl::Texture2D;
-                *sprite = rl::LoadTexture(target_file_path);
-                return (Sprite*)&rl::LoadTexture(target_file_path);
+        inline Sprite* LoadSprite(const char* target_file_path) override {
+                Texture2D* sprite = new Texture2D;
+                *sprite = LoadTexture(target_file_path);
+                return (Sprite*)sprite;
         }
-        void UnloadSprite(Sprite* sprite) override {
-                rl::UnloadTexture(*(rl::Texture2D*)sprite);
-                delete[] sprite;
-        }
-
-
-        bool WindowShouldClose() override {
-                return rl::WindowShouldClose();
+        inline void UnloadSprite(Sprite* sprite) override {
+                UnloadTexture(*(Texture2D*)sprite);
+                delete sprite;
         }
 
-        void BeginDrawing() override {
-                rl::UpdateCamera(&camera, rl::CAMERA_FREE);
-                rl::BeginDrawing();
-                rl::ClearBackground(rl::Color{0xff, 0xff, 0xff, 0xff});
-                rl::BeginMode3D(camera);
+
+        inline bool WindowShouldClose() override {
+                return ::WindowShouldClose();
         }
 
-        void Draw(
+        inline void BeginDrawing(int clear_color = 0xffffffff) override {
+                UpdateCamera(&camera, CAMERA_FREE);
+                ::BeginDrawing();
+                ClearBackground(
+                        Color{
+                                (unsigned char)((clear_color & 0xff000000) >> 24),
+                                (unsigned char)((clear_color & 0x00ff0000) >> 16),
+                                (unsigned char)((clear_color & 0x0000ff00) >> 8),
+                                (unsigned char)((clear_color & 0x000000ff))
+                        }
+                );
+        }
+
+        inline void Draw(
                 Model* model,
                 float position[3],
                 float rotation[3],
                 float scale[3],
                 int color_tint = 0xffffffff
         ) override {
-                rl::Model _model = *(rl::Model*)model;
+                BeginMode3D(camera);
 
-                // Have to manually rotate since rl::DrawModelEx() doesn't support multi-axis rotation...
-                _model.transform = rl::math::MatrixMultiply(
+                ::Model _model = *(::Model*)model;
+
+                // Have to manually rotate since DrawModelEx() doesn't support multi-axis rotation...
+                _model.transform = MatrixMultiply(
                         _model.transform,
 
-                        rl::math::QuaternionToMatrix(
-                                rl::math::QuaternionFromEuler(
+                        QuaternionToMatrix(
+                                QuaternionFromEuler(
                                         rotation[0],
                                         rotation[1],
                                         rotation[2]
@@ -105,68 +110,72 @@ public:
                         )
                 );
 
-                rl::DrawModelEx(
+                DrawModelEx(
                         _model,
-                        rl::Vector3{
+                        Vector3{
                                 position[0],
                                 position[1],
                                 position[2]
                         },
-                        rl::Vector3{0}, 0,
-                        rl::Vector3{
+                        Vector3{0}, 0,
+                        Vector3{
                                 scale[0],
                                 scale[1],
                                 scale[2]
                         },
-                        rl::Color{
+                        Color{
                                 (unsigned char)((color_tint & 0xff000000) >> 24),
                                 (unsigned char)((color_tint & 0x00ff0000) >> 16),
                                 (unsigned char)((color_tint & 0x0000ff00) >> 8),
                                 (unsigned char)((color_tint & 0x000000ff))
                         }
                 );
+
+                EndMode3D();
         }
 
-        void Draw(
+        inline void Draw(
                 Sprite* sprite,
                 float position[3],
                 float rotation[3],
                 float scale[3],
                 int color_tint = 0xffffffff
         ) override {
-                rl::Texture2D _sprite = *(rl::Texture2D*)sprite;
+                BeginMode3D(camera);
 
-                rl::Mesh mesh = rl::GenMeshPlane(
+                Texture2D _sprite = *(Texture2D*)sprite;
+
+                Mesh mesh = GenMeshPlane(
                         _sprite.width,
                         _sprite.height,
                         1, 1
                 );
 
-                rl::Material material = rl::LoadMaterialDefault();
-                material.maps[rl::MATERIAL_MAP_DIFFUSE].texture = _sprite;
+                Material material = LoadMaterialDefault();
+                material.maps[MATERIAL_MAP_DIFFUSE].texture = _sprite;
 
-                rl::Matrix transform = rl::math::MatrixIdentity();
-                transform = rl::math::MatrixMultiply(
+                Matrix transform = MatrixIdentity();
+                transform = MatrixMultiply(
                         transform,
-                        rl::math::MatrixScale(
+                        MatrixScale(
                                 scale[0],
                                 scale[1],
                                 scale[2]
                         )
                 );
-                transform = rl::math::MatrixMultiply(
+                transform = MatrixMultiply(
                         transform,
-                        rl::math::QuaternionToMatrix(
-                                rl::math::QuaternionFromEuler(
+                        QuaternionToMatrix(
+                                QuaternionFromEuler(
                                         rotation[0],
                                         rotation[1],
                                         rotation[2]
                                 )
                         )
                 );
-                transform = rl::math::MatrixMultiply(
+                transform = MatrixMultiply(
                         transform,
-                        rl::math::MatrixTranslate(
+                        MatrixTranslate(
                                 position[0],
                                 position[1],
                                 position[2]
@@ -174,22 +183,23 @@ public:
                 );
 
                 // One half of X- billboard/sprite
-                rl::DrawMesh(mesh, material, transform);
+                DrawMesh(mesh, material, transform);
 
-                transform = rl::math::MatrixMultiply(
+                transform = MatrixMultiply(
                         transform,
-                        rl::math::MatrixRotateY(PI/2)
+                        MatrixRotateX(PI/2) // TEMP; TEST
                 );
 
                 // Second half of X- billboard/sprite
-                rl::DrawMesh(mesh, material, transform);
+                DrawMesh(mesh, material, transform);
 
-                rl::UnloadMesh(mesh);
+                UnloadMesh(mesh);
+
+                EndMode3D();
         }
 
-        void EndDrawing() override {
-                rl::EndMode3D();
-                rl::EndDrawing();
+        inline void EndDrawing() override {
+                ::EndDrawing();
         }
 
 };

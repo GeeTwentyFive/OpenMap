@@ -8,7 +8,9 @@
 class IEditor {
 
 public:
-        virtual int Run(IDraw drawer);
+        virtual int Run(IDraw&& drawer) = 0;
+
+        virtual ~IEditor() = default;
 
 };
 
