@@ -30,8 +30,8 @@ elseif(APPLE)
 
         target_link_libraries(
                 OpenMap
-                /libs/raylib/lib/libraylib_macos.a
-                /libs/lua/lib/liblua_macos.a
+		${PROJECT_SOURCE_DIR}/libs/raylib/lib/libraylib_macos.a
+                ${PROJECT_SOURCE_DIR}/libs/lua/lib/liblua_macos.a
                 "-framework IOKit"
                 "-framework Cocoa"
                 "-framework OpenGL"
@@ -41,8 +41,8 @@ elseif(UNIX)
 
         target_link_libraries(
                 OpenMap
-                /libs/raylib/lib/libraylib_linux.a
-                /libs/lua/lib/liblua_linux.a
+		${PROJECT_SOURCE_DIR}/libs/raylib/lib/libraylib_linux.a
+		${PROJECT_SOURCE_DIR}/libs/lua/lib/liblua_linux.a
         )
 
 endif()
