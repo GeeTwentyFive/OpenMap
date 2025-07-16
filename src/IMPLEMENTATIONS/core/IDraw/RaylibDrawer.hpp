@@ -83,8 +83,24 @@ public:
                 return ::WindowShouldClose();
         }
 
+        inline void UpdateCamera(float movement[3], float rotation[3]) override {
+                UpdateCameraPro(
+                        &camera,
+                        Vector3{
+                                movement[0],
+                                movement[1],
+                                movement[2]
+                        },
+                        Vector3{
+                                rotation[0],
+                                rotation[1],
+                                rotation[2]
+                        },
+                        1
+                );
+        }
+
         inline void BeginDrawing(int clear_color = 0x000000ff) override {
-                UpdateCamera(&camera, CAMERA_FREE);
                 ::BeginDrawing();
                 ClearBackground(
                         Color{

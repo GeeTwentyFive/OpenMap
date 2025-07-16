@@ -17,6 +17,8 @@ public:
         ) = 0;
 
         virtual std::tuple<int, int> GetCursorPos() = 0;
+        
+        virtual std::tuple<int, int> GetMouseDelta() = 0;
 
         virtual ~IInput() = default;
 

@@ -21,6 +21,19 @@ public:
 
                 while (!drawer.WindowShouldClose()) {
 
+                        drawer.UpdateCamera(
+                                new float[3]{
+                                        0.0f, // TODO
+                                        0.0f,
+                                        0.0f
+                                },
+                                new float[3]{
+                                        0.0f, // TODO: IInput + <-GetMouseDelta
+                                        0.0f,
+                                        0.0f
+                                }
+                        );
+
                         drawer.BeginDrawing();
                         {
 
