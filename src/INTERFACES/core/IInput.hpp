@@ -134,6 +134,9 @@ public:
 
         virtual std::tuple<int, int> GetMouseWheelDelta() = 0;
 
+        virtual void LockCursor() = 0;
+        virtual void UnlockCursor() = 0;
+
 
         virtual ~IInput() = default;
 

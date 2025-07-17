@@ -1,8 +1,8 @@
+- FIX RaylibInput::Map()
 - Switch to UpdateCameraPro():
         - Change camera move speed with scroll wheel
         - Only UpdateCameraPro() when RMB is held down (+ LOCK CURSOR)
         - ^ IDraw::UpdateCamera(float movement[3])
-- Define Keycode's in IInput.hpp
 - ILua.hpp
 - MapObject struct
 - ^ main std::vector<MapObject>

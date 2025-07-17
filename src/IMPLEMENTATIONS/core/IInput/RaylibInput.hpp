@@ -4,7 +4,8 @@
 #include <src/INTERFACES/core/IInput.hpp>
 #include <tuple>
 
-#include <map>
+#include <unordered_map>
+#include <vector>
 #include <algorithm>
 #include <libs/raylib/include/raylib.h>
 
@@ -12,7 +13,7 @@
 class RaylibInput: public IInput {
 
 private:
-	const std::map<Keycode, int> KEYCODE_MAP {
+	const std::unordered_map<Keycode, int> KEYCODE_MAP {
 		{Keycode::APOSTROPHE, KEY_APOSTROPHE},
 		{Keycode::COMMA, KEY_COMMA},
 		{Keycode::MINUS, KEY_MINUS},
@@ -125,7 +126,10 @@ private:
 		{Keycode::MB_MIDDLE, MOUSE_BUTTON_MIDDLE}
 	};
 
-	std::map<std::function<void()>, Keycode> subscribers;
+	std::unordered_map<
+		Keycode,
+		std::vector< std::function<void()> >
+	> subscribers;
 
 
 public:
@@ -133,28 +137,37 @@ public:
                 Keycode keycode,
                 std::function<void()> callback
         ) override {
-		subscribers[callback] = keycode; // TODO: FIX
+		subscribers[keycode].push_back(callback);
 	}
 
 	inline void Update() override {
-		std::for_each(
-			subscribers.begin(),
-			subscribers.end(),
-			[
-				&KEYCODE_MAP = this->KEYCODE_MAP
-			] (const std::pair<std::function<void()>, Keycode> &kv) {
-				if (kv.second >= Keycode::MB_LEFT) {
-					if (IsMouseButtonPressed(KEYCODE_MAP.at(kv.second))) {
-						(kv.first)();
-					}
-				}
-				else {
-					if (IsKeyPressed(KEYCODE_MAP.at(kv.second))) {
-						(kv.first)();
-					}
+		for (
+			const std::pair<
+				Keycode,
+				std::vector< std::function<void()> >
+			> &kv : subscribers
+		) {
+			bool notify = false;
+
+			if (kv.first >= Keycode::MB_LEFT) {
+				if (IsMouseButtonPressed(KEYCODE_MAP.at(kv.first))) {
+					notify = true;
 				}
 			}
-		);
+			else {
+				if (IsKeyPressed(KEYCODE_MAP.at(kv.first))) {
+					notify = true;
+				}
+			}
+
+			if (notify) {
+				for (
+					const std::function<void()> &callback : kv.second
+				) {
+					callback();
+				}
+			}
+		}
 	}
 
         inline std::tuple<int, int> GetCursorPos() override {
@@ -179,6 +192,13 @@ public:
 			mouse_wheel_delta.x,
 			mouse_wheel_delta.y
 		);
+	}
+
+	inline void LockCursor() override {
+		DisableCursor();
+	}
+	inline void UnlockCursor() override {
+		EnableCursor();
 	}
 
 };
