@@ -1,6 +1,7 @@
 #include <src/IMPLEMENTATIONS/editor/IEditor/Editor.hpp>
 
 #include <src/IMPLEMENTATIONS/core/IDraw/RaylibDrawer.hpp>
+#include <src/IMPLEMENTATIONS/core/IInput/RaylibInput.hpp>
 
 
 int main() {
@@ -12,7 +13,8 @@ int main() {
                                 FLAG_WINDOW_MAXIMIZED |
                                 FLAG_MSAA_4X_HINT
                         )
-                )
+                ),
+                RaylibInput()
         );
 
 }

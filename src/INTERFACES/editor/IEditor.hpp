@@ -2,13 +2,16 @@
 #define _OPENMAP_IEDITOR_HPP
 
 #include <src/INTERFACES/core/IDraw.hpp>
-// TODO
+#include <src/INTERFACES/core/IInput.hpp>
 
 
 class IEditor {
 
 public:
-        virtual int Run(IDraw&& drawer) = 0;
+        virtual int Run(
+                IDraw&& drawer,
+                IInput&& input
+        ) = 0;
 
         virtual ~IEditor() = default;
 
