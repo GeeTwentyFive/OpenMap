@@ -57,6 +57,7 @@ public:
                                 input.UnlockCursor();
                         }
 
+
                         drawer.BeginDrawing();
                         {
 

@@ -1,4 +1,10 @@
-- ILua.hpp
+- ILua.hpp:
+        - Constructor (state)
+        - SetFunction()
+        - CallFunction()
+- (LUA) add_map_object(path, ...) -> (C++) AddMapObject(path, ...)
+- (C++) Export(data) -> (LUA) export(data) // if defined
+- ^ https://sol2.readthedocs.io/en/latest/api/variadic_args.html
 - MapObject struct
 - ^ main std::vector<MapObject>
 - https://www.raylib.com/examples/core/loader.html?name=core_3d_picking + GetMeshBoundingBox()
