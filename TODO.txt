@@ -1,4 +1,7 @@
 - FIX RaylibInput::Map()
+- ^ OR:
+        1) Define actions
+        2) BindKey() + SetActionCallback() + IsActionPressed() + Update()
 - Switch to UpdateCameraPro():
         - Change camera move speed with scroll wheel
         - Only UpdateCameraPro() when RMB is held down (+ LOCK CURSOR)
