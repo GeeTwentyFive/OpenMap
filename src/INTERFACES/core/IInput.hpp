@@ -115,18 +115,20 @@ public:
                 KP_ADD,
                 KP_ENTER,
                 KP_EQUAL,
-                // Mouse buttons
-                MB_LEFT,
-                MB_RIGHT,
-                MB_MIDDLE
         };
 
-        virtual void Map(
-                Keycode keycode,
-                std::function<void()>
-        ) = 0;
+        enum class MouseButton {
+                LEFT,
+                RIGHT,
+                MIDDLE
+        };
 
-        virtual void Update() = 0;
+
+        virtual bool IsKeyPressed(Keycode keycode) = 0; // Pressed once
+        virtual bool IsKeyDown(Keycode keycode) = 0; // Actively pressed
+
+        virtual bool IsMouseButtonPressed(MouseButton mouse_button) = 0; // Pressed once
+        virtual bool IsMouseButtonDown(MouseButton mouse_button) = 0; // Actively pressed
 
         virtual std::tuple<int, int> GetCursorPos() = 0;
         

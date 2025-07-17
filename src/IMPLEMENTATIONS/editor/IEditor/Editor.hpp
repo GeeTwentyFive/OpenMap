@@ -10,8 +10,10 @@ class Editor: public IEditor {
 
 private:
         const float MOUSE_SENSITIVITY = 0.1f;
+        const float MIN_CAMERA_MOVE_SPEED = 1.0f;
 
-        const IInput::Keycode KEY_CAMERA_TOGGLE = IInput::Keycode::MB_RIGHT;
+        const IInput::MouseButton BTN_CAMERA_TOGGLE = IInput::MouseButton::RIGHT;
+
         const IInput::Keycode KEY_CAMERA_FORWARD = IInput::Keycode::W;
         const IInput::Keycode KEY_CAMERA_BACK = IInput::Keycode::S;
         const IInput::Keycode KEY_CAMERA_RIGHT = IInput::Keycode::A;
@@ -20,75 +22,7 @@ private:
         const IInput::Keycode KEY_CAMERA_DOWN = IInput::Keycode::LEFT_CONTROL;
 
 
-        bool camera_movement_enabled = false;
-        int camera_movement_direction[3] = {0};
-        float camera_move_speed = 1.0f;
-
-
-        void InitInputs(IInput &input) {
-                input.Map(
-                        KEY_CAMERA_TOGGLE,
-                        [
-                                &camera_movement_enabled = this->camera_movement_enabled
-                        ](){
-                                camera_movement_enabled = !camera_movement_enabled;
-                        }
-                );
-
-                input.Map(
-                        KEY_CAMERA_FORWARD,
-                        [
-                                &camera_movement_direction = this->camera_movement_direction
-                        ](){
-                                camera_movement_direction[2] += 1;
-                        }
-                );
-
-                input.Map(
-                        KEY_CAMERA_BACK,
-                        [
-                                &camera_movement_direction = this->camera_movement_direction
-                        ](){
-                                camera_movement_direction[2] -= 1;
-                        }
-                );
-
-                input.Map(
-                        KEY_CAMERA_RIGHT,
-                        [
-                                &camera_movement_direction = this->camera_movement_direction
-                        ](){
-                                camera_movement_direction[0] += 1;
-                        }
-                );
-
-                input.Map(
-                        KEY_CAMERA_LEFT,
-                        [
-                                &camera_movement_direction = this->camera_movement_direction
-                        ](){
-                                camera_movement_direction[0] -= 1;
-                        }
-                );
-
-                input.Map(
-                        KEY_CAMERA_UP,
-                        [
-                                &camera_movement_direction = this->camera_movement_direction
-                        ](){
-                                camera_movement_direction[1] += 1;
-                        }
-                );
-
-                input.Map(
-                        KEY_CAMERA_DOWN,
-                        [
-                                &camera_movement_direction = this->camera_movement_direction
-                        ](){
-                                camera_movement_direction[1] -= 1;
-                        }
-                );
-        }
+        float camera_move_speed = MIN_CAMERA_MOVE_SPEED;
 
 
 public:
@@ -96,10 +30,6 @@ public:
                 IDraw&& drawer,
                 IInput&& input
         ) override {
-
-                InitInputs(input);
-
-
                 // TEMP; TEST:
                 //IDraw::Model* test_model = drawer.LoadModel("viking_room.obj");
                 IDraw::Model* test_sprite = drawer.LoadSprite("viking_room.png");
@@ -113,14 +43,18 @@ public:
 
                         std::tuple<int, int> mouse_wheel_delta = input.GetMouseWheelDelta();
                         camera_move_speed += std::get<1>(mouse_wheel_delta);
+                        if (camera_move_speed < MIN_CAMERA_MOVE_SPEED) camera_move_speed = MIN_CAMERA_MOVE_SPEED;
 
-                        if (camera_movement_enabled) {
+                        if (input.IsMouseButtonDown(BTN_CAMERA_TOGGLE)) {
                                 input.LockCursor();
                                 drawer.UpdateCamera(
                                         new float[3]{
-                                                (float)camera_movement_direction[0] * camera_move_speed,
-                                                (float)camera_movement_direction[1] * camera_move_speed,
-                                                (float)camera_movement_direction[2] * camera_move_speed
+                                                (float)(input.IsKeyDown(KEY_CAMERA_FORWARD) -
+                                                        input.IsKeyDown(KEY_CAMERA_BACK)) * camera_move_speed,
+                                                (float)(input.IsKeyDown(KEY_CAMERA_LEFT) -
+                                                        input.IsKeyDown(KEY_CAMERA_RIGHT)) * camera_move_speed,
+                                                (float)(input.IsKeyDown(KEY_CAMERA_UP) -
+                                                        input.IsKeyDown(KEY_CAMERA_DOWN)) * camera_move_speed
                                         },
                                         new float[3]{
                                                 (float)std::get<0>(mouse_delta) * MOUSE_SENSITIVITY,

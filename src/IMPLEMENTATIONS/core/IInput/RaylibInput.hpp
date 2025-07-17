@@ -8,6 +8,7 @@
 #include <vector>
 #include <algorithm>
 #include <libs/raylib/include/raylib.h>
+#include <libs/raylib/include/rlgl.h>
 
 
 class RaylibInput: public IInput {
@@ -120,54 +121,36 @@ private:
 		{Keycode::KP_ADD, KEY_KP_ADD},
 		{Keycode::KP_ENTER, KEY_KP_ENTER},
 		{Keycode::KP_EQUAL, KEY_KP_EQUAL},
-		// Mouse buttons (PUT ONLY MOUSE BUTTONS PAST THIS POINT)
-		{Keycode::MB_LEFT, MOUSE_BUTTON_LEFT},
-		{Keycode::MB_RIGHT, MOUSE_BUTTON_RIGHT},
-		{Keycode::MB_MIDDLE, MOUSE_BUTTON_MIDDLE}
 	};
 
-	std::unordered_map<
-		Keycode,
-		std::vector< std::function<void()> >
-	> subscribers;
+	const std::unordered_map<MouseButton, int> MOUSE_BUTTON_MAP {
+		{MouseButton::LEFT, MOUSE_BUTTON_LEFT},
+		{MouseButton::RIGHT, MOUSE_BUTTON_RIGHT},
+		{MouseButton::MIDDLE, MOUSE_BUTTON_MIDDLE}
+	};
 
 
 public:
-        inline void Map(
-                Keycode keycode,
-                std::function<void()> callback
-        ) override {
-		subscribers[keycode].push_back(callback);
+        inline bool IsKeyPressed(Keycode keycode) override {
+		return ::IsKeyPressed(
+			KEYCODE_MAP.at(keycode)
+		);
+	}
+	inline bool IsKeyDown(Keycode keycode) override {
+		return ::IsKeyDown(
+			KEYCODE_MAP.at(keycode)
+		);
 	}
 
-	inline void Update() override {
-		for (
-			const std::pair<
-				Keycode,
-				std::vector< std::function<void()> >
-			> &kv : subscribers
-		) {
-			bool notify = false;
-
-			if (kv.first >= Keycode::MB_LEFT) {
-				if (IsMouseButtonPressed(KEYCODE_MAP.at(kv.first))) {
-					notify = true;
-				}
-			}
-			else {
-				if (IsKeyPressed(KEYCODE_MAP.at(kv.first))) {
-					notify = true;
-				}
-			}
-
-			if (notify) {
-				for (
-					const std::function<void()> &callback : kv.second
-				) {
-					callback();
-				}
-			}
-		}
+	inline bool IsMouseButtonPressed(MouseButton mouse_button) override {
+		return ::IsMouseButtonPressed(
+			MOUSE_BUTTON_MAP.at(mouse_button)
+		);
+	}
+	inline bool IsMouseButtonDown(MouseButton mouse_button) override {
+		return ::IsMouseButtonDown(
+			MOUSE_BUTTON_MAP.at(mouse_button)
+		);
 	}
 
         inline std::tuple<int, int> GetCursorPos() override {

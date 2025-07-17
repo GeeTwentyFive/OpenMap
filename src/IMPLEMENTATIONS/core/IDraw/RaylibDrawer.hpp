@@ -12,7 +12,12 @@
 class RaylibDrawer: public IDraw {
 
 private:
+        const double CAMERA_NEAR = 1.0f;
+	const double CAMERA_FAR = 10000.0f;
+
+
         Camera camera;
+
 
 public:
         inline RaylibDrawer(
@@ -41,6 +46,8 @@ public:
                 camera.up = Vector3{0.0f, 1.0f, 0.0f};
                 camera.fovy = camera_fov;
                 camera.projection = CAMERA_PERSPECTIVE;
+
+                rlSetClipPlanes(CAMERA_NEAR, CAMERA_FAR);
 
         }
 
@@ -97,6 +104,10 @@ public:
                                 rotation[2]
                         },
                         1
+                );
+                camera.position = Vector3Add(
+                        camera.position,
+                        Vector3Normalize(Vector3Subtract(camera.target, camera.position))
                 );
         }
 
