@@ -49,6 +49,8 @@ public:
 
                 rlSetClipPlanes(CAMERA_NEAR, CAMERA_FAR);
 
+                SetExitKey(0);
+
         }
 
         inline ~RaylibDrawer() {
@@ -90,7 +92,7 @@ public:
                 return ::WindowShouldClose();
         }
 
-        inline void UpdateCamera(float movement[3], float rotation[3]) override {
+        inline void UpdateCamera(float movement[3], float rotation[2]) override {
                 UpdateCameraPro(
                         &camera,
                         Vector3{
@@ -101,7 +103,7 @@ public:
                         Vector3{
                                 rotation[0],
                                 rotation[1],
-                                rotation[2]
+                                0.0f
                         },
                         1
                 );

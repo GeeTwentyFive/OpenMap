@@ -181,7 +181,9 @@ public:
 		DisableCursor();
 	}
 	inline void UnlockCursor() override {
-		EnableCursor();
+		if (IsCursorHidden()) {
+			EnableCursor();
+		}
 	}
 
 };

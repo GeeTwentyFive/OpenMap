@@ -3,14 +3,12 @@
 
 #include <src/INTERFACES/editor/IEditor.hpp>
 
-#include <libs/raylib/include/raylib.h>
-
 
 class Editor: public IEditor {
 
 private:
         const float MOUSE_SENSITIVITY = 0.1f;
-        const float MIN_CAMERA_MOVE_SPEED = 1.0f;
+        const float MIN_CAMERA_MOVE_SPEED = 0.1f;
 
         const IInput::MouseButton BTN_CAMERA_TOGGLE = IInput::MouseButton::RIGHT;
 
@@ -30,13 +28,6 @@ public:
                 IDraw&& drawer,
                 IInput&& input
         ) override {
-                // TEMP; TEST:
-                //IDraw::Model* test_model = drawer.LoadModel("viking_room.obj");
-                IDraw::Model* test_sprite = drawer.LoadSprite("viking_room.png");
-                float test_model_position[3] = {0.0f, 0.0f, 10.0f};
-                float test_model_rotation[3] = {0.0f, 0.0f, 0.0f};
-                float test_model_scale[3] = {1.0f, 1.0f, 1.0f};
-
                 while (!drawer.WindowShouldClose()) {
 
                         std::tuple<int, int> mouse_delta = input.GetMouseDelta();
@@ -56,10 +47,9 @@ public:
                                                 (float)(input.IsKeyDown(KEY_CAMERA_UP) -
                                                         input.IsKeyDown(KEY_CAMERA_DOWN)) * camera_move_speed
                                         },
-                                        new float[3]{
+                                        new float[2]{
                                                 (float)std::get<0>(mouse_delta) * MOUSE_SENSITIVITY,
-                                                (float)std::get<1>(mouse_delta) * MOUSE_SENSITIVITY,
-                                                0.0f
+                                                (float)std::get<1>(mouse_delta) * MOUSE_SENSITIVITY
                                         }
                                 );
                         }
@@ -70,18 +60,14 @@ public:
                         drawer.BeginDrawing();
                         {
 
-                                drawer.Draw(
-                                        test_sprite,
-                                        test_model_position,
-                                        test_model_rotation,
-                                        test_model_scale,
-                                        0x808080ff
-                                );
+                                // TODO: Draw added MapObject's
 
                         }
                         drawer.EndDrawing();
 
                 }
+
+                // TODO: Prompt to save before exiting if unsaved work
 
                 return 0;
 

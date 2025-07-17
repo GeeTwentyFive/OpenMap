@@ -15,7 +15,7 @@ public:
 
         virtual bool WindowShouldClose() = 0;
 
-        virtual void UpdateCamera(float movement[3], float rotation[3]) = 0;
+        virtual void UpdateCamera(float movement[3], float rotation[2]) = 0;
 
         virtual void BeginDrawing(int clear_color = 0x000000ff) = 0;
 
