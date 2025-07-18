@@ -3,6 +3,7 @@
 
 #include <src/INTERFACES/core/IDraw.hpp>
 
+#include <stdexcept>
 #include <libs/raylib/include/raylib.h>
 #define RAYMATH_STATIC_INLINE
 #include <libs/raylib/include/raymath.h>
@@ -61,12 +62,18 @@ public:
         inline Model* LoadModel(const char* target_file_path) override {
                 ::Model* model = new ::Model;
                 *model = ::LoadModel(target_file_path);
+                if (model->meshCount == 0) throw std::runtime_error(
+                        std::string("ERROR: Failed to load model: ") + target_file_path
+                );
                 return (Model*)model;
         }
 
         inline Model* LoadSprite(const char* target_file_path) override {
 
                 Texture2D sprite = LoadTexture(target_file_path);
+                if (sprite.width == 0 && sprite.height == 0) throw std::runtime_error(
+                        std::string("ERROR: Failed to load sprite: ") + target_file_path
+                );
 
                 Mesh mesh = GenMeshPlane(
                         sprite.width,
@@ -78,7 +85,7 @@ public:
                 *model = LoadModelFromMesh(mesh);
                 model->materials->maps[MATERIAL_MAP_DIFFUSE].texture = sprite;
 
-                return (Model*)model; // TEMP; TEST
+                return (Model*)model;
 
         }
 

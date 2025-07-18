@@ -3,8 +3,6 @@
 
 #include <src/INTERFACES/editor/IEditor.hpp>
 
-#include <iostream> // TEMP; TEST
-
 
 class Editor: public IEditor {
 
@@ -23,10 +21,10 @@ private:
 
 
         struct MapObject {
-                std::string path;
-                std::array<float, 3> pos;
-                std::array<float, 3> rot;
-                std::array<float, 3> scale;
+                IDraw::Model* model;
+                float pos[3];
+                float rot[3];
+                float scale[3];
                 std::vector<std::string> extra_data;
         };
 
@@ -36,30 +34,36 @@ private:
         float camera_move_speed = MIN_CAMERA_MOVE_SPEED;
 
 
+        IDraw* _drawer = nullptr;
+        IInput* _input = nullptr;
+
+
 public:
         int Run(
-                IDraw&& drawer,
-                IInput&& input
+                IDraw* drawer,
+                IInput* input
         ) override {
+                _drawer = drawer;
+                _input = input;
 
-                while (!drawer.WindowShouldClose()) {
+                while (!_drawer->WindowShouldClose()) {
 
-                        std::tuple<int, int> mouse_delta = input.GetMouseDelta();
+                        std::tuple<int, int> mouse_delta = _input->GetMouseDelta();
 
-                        std::tuple<int, int> mouse_wheel_delta = input.GetMouseWheelDelta();
+                        std::tuple<int, int> mouse_wheel_delta = _input->GetMouseWheelDelta();
                         camera_move_speed += std::get<1>(mouse_wheel_delta);
                         if (camera_move_speed < MIN_CAMERA_MOVE_SPEED) camera_move_speed = MIN_CAMERA_MOVE_SPEED;
 
-                        if (input.IsMouseButtonDown(BTN_CAMERA_TOGGLE)) {
-                                input.LockCursor();
-                                drawer.UpdateCamera(
+                        if (_input->IsMouseButtonDown(BTN_CAMERA_TOGGLE)) {
+                                _input->LockCursor();
+                                _drawer->UpdateCamera(
                                         new float[3]{
-                                                (float)(input.IsKeyDown(KEY_CAMERA_FORWARD) -
-                                                        input.IsKeyDown(KEY_CAMERA_BACK)) * camera_move_speed,
-                                                (float)(input.IsKeyDown(KEY_CAMERA_LEFT) -
-                                                        input.IsKeyDown(KEY_CAMERA_RIGHT)) * camera_move_speed,
-                                                (float)(input.IsKeyDown(KEY_CAMERA_UP) -
-                                                        input.IsKeyDown(KEY_CAMERA_DOWN)) * camera_move_speed
+                                                (float)(_input->IsKeyDown(KEY_CAMERA_FORWARD) -
+                                                        _input->IsKeyDown(KEY_CAMERA_BACK)) * camera_move_speed,
+                                                (float)(_input->IsKeyDown(KEY_CAMERA_LEFT) -
+                                                        _input->IsKeyDown(KEY_CAMERA_RIGHT)) * camera_move_speed,
+                                                (float)(_input->IsKeyDown(KEY_CAMERA_UP) -
+                                                        _input->IsKeyDown(KEY_CAMERA_DOWN)) * camera_move_speed
                                         },
                                         new float[2]{
                                                 (float)std::get<0>(mouse_delta) * MOUSE_SENSITIVITY,
@@ -68,17 +72,22 @@ public:
                                 );
                         }
                         else {
-                                input.UnlockCursor();
+                                _input->UnlockCursor();
                         }
 
 
-                        drawer.BeginDrawing();
+                        _drawer->BeginDrawing();
                         {
-
-                                // TODO: Draw added MapObject's
-
+                                for (MapObject map_object : map_objects) {
+                                        _drawer->Draw(
+                                                map_object.model,
+                                                map_object.pos,
+                                                map_object.rot,
+                                                map_object.scale
+                                        );
+                                }
                         }
-                        drawer.EndDrawing();
+                        _drawer->EndDrawing();
 
                 }
 
@@ -89,10 +98,14 @@ public:
         }
 
         inline void AddMapObject(
+                MapObjectType type,
                 std::string path,
                 std::vector<std::string> extra_data
         ) override {
-                // TODO
+                //MapObject* map_object = new MapObject;
+                //switch (type) {
+                //        case MapObjectType::MODEL:
+                //}
         }
 
 };

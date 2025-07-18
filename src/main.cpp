@@ -7,14 +7,14 @@
 int main() {
 
         return Editor().Run(
-                RaylibDrawer(
+                new RaylibDrawer(
                         (ConfigFlags)(
                                 FLAG_WINDOW_RESIZABLE |
                                 FLAG_WINDOW_MAXIMIZED |
                                 FLAG_MSAA_4X_HINT
                         )
                 ),
-                RaylibInput()
+                new RaylibInput()
         );
 
 }

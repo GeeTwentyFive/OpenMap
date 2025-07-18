@@ -10,12 +10,19 @@
 class IEditor {
 
 public:
+        enum class MapObjectType {
+                MODEL,
+                SPRITE
+        };
+
+
         virtual int Run(
-                IDraw&& drawer,
-                IInput&& input
+                IDraw* drawer,
+                IInput* input
         ) = 0;
 
         virtual void AddMapObject(
+                MapObjectType type,
                 std::string path,
                 std::vector<std::string> extra_data
         ) = 0;
