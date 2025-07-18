@@ -68,7 +68,7 @@ private:
 		{Keycode::TAB, KEY_TAB},
 		{Keycode::BACKSPACE, KEY_BACKSPACE},
 		{Keycode::INSERT, KEY_INSERT},
-		{Keycode::DELETE, KEY_DELETE},
+		{Keycode::DEL, KEY_DELETE},
 		{Keycode::RIGHT, KEY_RIGHT},
 		{Keycode::LEFT, KEY_LEFT},
 		{Keycode::DOWN, KEY_DOWN},

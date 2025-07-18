@@ -20,6 +20,12 @@ target_include_directories(
 
 if(WIN32)
 
+        target_compile_definitions(
+                OpenMap
+                PUBLIC NOGDI
+                PUBLIC NOUSER
+        )
+
         target_link_libraries(
                 OpenMap
                 ${PROJECT_SOURCE_DIR}/libs/raylib/lib/libraylib_windows.a

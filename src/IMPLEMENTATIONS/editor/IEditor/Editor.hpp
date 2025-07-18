@@ -125,11 +125,13 @@ public:
                 try { config_chai.eval_file(config_file_name); }
                 catch(const std::exception& e) {
                         throw std::runtime_error(
-                                std::string("ERROR: Failed to read OpenMap config: ") +
+                                std::string("ERROR: Failed to execute config script: ") +
                                 '"' + config_file_name + '"' +
                                 "\nChaiScript's error: " + e.what()
                         );
                 }
+
+                InstantiateMapObject("Viking Room Sprite"); // TEMP; TEST
 
                 // Main loop
                 while (!_drawer->WindowShouldClose()) {
