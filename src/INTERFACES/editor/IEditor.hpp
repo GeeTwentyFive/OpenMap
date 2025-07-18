@@ -18,7 +18,9 @@ public:
 
         virtual int Run(
                 IDraw* drawer,
-                IInput* input
+                IInput* input,
+                const char* config_file_name,
+                const char* export_file_name = 0
         ) = 0;
 
         virtual void AddMapObject(
@@ -26,6 +28,8 @@ public:
                 std::string path,
                 std::vector<std::string> extra_data = {}
         ) = 0;
+
+        virtual void Export(std::string path) = 0;
 
         virtual ~IEditor() = default;
 

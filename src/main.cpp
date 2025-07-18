@@ -4,6 +4,10 @@
 #include <src/IMPLEMENTATIONS/core/IInput/RaylibInput.hpp>
 
 
+#define OPENMAP_CONFIG_SCRIPT "config.chai"
+#define OPENMAP_EXPORT_SCRIPT "export.chai"
+
+
 int main() {
 
         return Editor().Run(
@@ -14,7 +18,9 @@ int main() {
                                 FLAG_MSAA_4X_HINT
                         )
                 ),
-                new RaylibInput()
+                new RaylibInput(),
+                OPENMAP_CONFIG_SCRIPT,
+                OPENMAP_EXPORT_SCRIPT
         );
 
 }

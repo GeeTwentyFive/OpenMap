@@ -1,10 +1,5 @@
-- ILua.hpp:
-        - Constructor (state)
-        - SetFunction()
-        - CallFunction()
-^ std::any_cast<T>()
-- (LUA) add_map_object(path, ...) -> (C++) AddMapObject(path, ...)
-- (C++) Export(data) -> (LUA) export(data) // if defined
+- (SCRIPT) add_map_object(path, ...) -> (C++) AddMapObject(path, ...)
+- (C++) Export(data) -> (SCRIPT) export(data) // if defined
 
 - ^ https://sol2.readthedocs.io/en/latest/api/variadic_args.html
 - MapObject struct

@@ -3,7 +3,8 @@
 
 #include <src/INTERFACES/editor/IEditor.hpp>
 
-#include <iostream> // TEMP; DEBUG
+#include <stdexcept>
+#include <libs/chaiscript/chaiscript.hpp>
 
 
 class Editor: public IEditor {
@@ -38,18 +39,29 @@ private:
 
         IDraw* _drawer = nullptr;
         IInput* _input = nullptr;
+        chaiscript::ChaiScript* chai;
 
 
 public:
         int Run(
                 IDraw* drawer,
-                IInput* input
+                IInput* input,
+                const char* config_file_name,
+                const char* export_file_name = 0
         ) override {
                 _drawer = drawer;
                 _input = input;
+                chai = new chaiscript::ChaiScript;
 
-                // TEMP; TEST
-                AddMapObject(MapObjectType::SPRITE, "viking_room.png");
+                // Init MapObjects via ChaiScript config
+                try { chai->eval_file(config_file_name); }
+                catch(const std::exception& e) {
+                        throw std::runtime_error(
+                                std::string("ERROR: Failed to read OpenMap config: ") +
+                                '"' + config_file_name + '"' +
+                                "\nChaiScript's error: " + e.what()
+                        );
+                }
 
                 while (!_drawer->WindowShouldClose()) {
 
@@ -124,6 +136,16 @@ public:
                 map_object.scale[0] = map_object.scale[1] = map_object.scale[2] = 1.0f;
                 map_object.extra_data = extra_data;
                 map_objects.push_back(map_object);
+        }
+
+        inline void Export(std::string path) override {
+                // TODO:
+                // - Check if "export.chai" exists
+                //      - ^ if so:
+                //              - call export(map_objects)
+                //              - ^ extract string output as .c_str()
+                //              - ^ write to <path> file
+                //      - ^ if not: export as JSON
         }
 
 };
