@@ -24,7 +24,7 @@ public:
         virtual void AddMapObject(
                 MapObjectType type,
                 std::string path,
-                std::vector<std::string> extra_data
+                std::vector<std::string> extra_data = {}
         ) = 0;
 
         virtual ~IEditor() = default;

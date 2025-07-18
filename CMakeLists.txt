@@ -12,8 +12,9 @@ add_executable(
 target_include_directories(
         OpenMap
         PUBLIC .
-        PUBLIC libs/raylib-gizmo
         PUBLIC libs/raylib/include
+        PUBLIC libs/raylib-gizmo
+        PUBLIC libs/chaiscript
 )
 
 

@@ -3,6 +3,8 @@
 
 #include <src/INTERFACES/editor/IEditor.hpp>
 
+#include <iostream> // TEMP; DEBUG
+
 
 class Editor: public IEditor {
 
@@ -45,6 +47,9 @@ public:
         ) override {
                 _drawer = drawer;
                 _input = input;
+
+                // TEMP; TEST
+                AddMapObject(MapObjectType::SPRITE, "viking_room.png");
 
                 while (!_drawer->WindowShouldClose()) {
 
@@ -100,12 +105,25 @@ public:
         inline void AddMapObject(
                 MapObjectType type,
                 std::string path,
-                std::vector<std::string> extra_data
+                std::vector<std::string> extra_data = {}
         ) override {
-                //MapObject* map_object = new MapObject;
-                //switch (type) {
-                //        case MapObjectType::MODEL:
-                //}
+                MapObject map_object{};
+                switch (type) {
+                        case MapObjectType::MODEL:
+                        {
+                                map_object.model = _drawer->LoadModel(path.c_str());
+                        }
+                        break;
+
+                        case MapObjectType::SPRITE:
+                        {
+                                map_object.model = _drawer->LoadSprite(path.c_str());
+                        }
+                        break;
+                }
+                map_object.scale[0] = map_object.scale[1] = map_object.scale[2] = 1.0f;
+                map_object.extra_data = extra_data;
+                map_objects.push_back(map_object);
         }
 
 };
