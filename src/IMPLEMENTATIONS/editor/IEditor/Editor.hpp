@@ -24,6 +24,13 @@ private:
 
 
         struct MapObject {
+                std::string name;
+                IDraw::Model* model;
+                std::vector<std::string> extra_data;
+        };
+
+        struct MapObjectInstance {
+                std::string name;
                 IDraw::Model* model;
                 float pos[3];
                 float rot[3];
@@ -33,13 +40,26 @@ private:
 
 
         std::vector<MapObject> map_objects;
+        std::vector<MapObjectInstance> map_object_instances;
 
         float camera_move_speed = MIN_CAMERA_MOVE_SPEED;
-
 
         IDraw* _drawer = nullptr;
         IInput* _input = nullptr;
         chaiscript::ChaiScript* chai;
+
+
+        void InstantiateMapObject(int index) {
+                MapObjectInstance map_object_instance{
+                        .name = map_objects[index].name,
+                        .model = map_objects[index].model,
+                        .extra_data = map_objects[index].extra_data
+                };
+                map_object_instance.scale[0] =
+                        map_object_instance.scale[1] =
+                                map_object_instance.scale[2] = 1.0f;
+                map_object_instances.push_back(map_object_instance);
+        }
 
 
 public:
@@ -53,15 +73,20 @@ public:
                 _input = input;
                 chai = new chaiscript::ChaiScript;
 
-                // Init MapObjects via ChaiScript config
-                try { chai->eval_file(config_file_name); }
-                catch(const std::exception& e) {
-                        throw std::runtime_error(
-                                std::string("ERROR: Failed to read OpenMap config: ") +
-                                '"' + config_file_name + '"' +
-                                "\nChaiScript's error: " + e.what()
-                        );
-                }
+                // TEMP; TEST
+                AddMapObject("Viking Room", MapObjectType::SPRITE, "viking_room.png");
+                InstantiateMapObject(0);
+
+                //// Init ChaiScript -> MapObjects
+                //// TODO: Add AddMapObjects to ChaiScript
+                //try { chai->eval_file(config_file_name); }
+                //catch(const std::exception& e) {
+                //        throw std::runtime_error(
+                //                std::string("ERROR: Failed to read OpenMap config: ") +
+                //                '"' + config_file_name + '"' +
+                //                "\nChaiScript's error: " + e.what()
+                //        );
+                //}
 
                 while (!_drawer->WindowShouldClose()) {
 
@@ -95,7 +120,7 @@ public:
 
                         _drawer->BeginDrawing();
                         {
-                                for (MapObject map_object : map_objects) {
+                                for (MapObjectInstance map_object : map_object_instances) {
                                         _drawer->Draw(
                                                 map_object.model,
                                                 map_object.pos,
@@ -115,11 +140,13 @@ public:
         }
 
         inline void AddMapObject(
+                std::string name,
                 MapObjectType type,
                 std::string path,
                 std::vector<std::string> extra_data = {}
         ) override {
                 MapObject map_object{};
+                map_object.name = name;
                 switch (type) {
                         case MapObjectType::MODEL:
                         {
@@ -133,7 +160,6 @@ public:
                         }
                         break;
                 }
-                map_object.scale[0] = map_object.scale[1] = map_object.scale[2] = 1.0f;
                 map_object.extra_data = extra_data;
                 map_objects.push_back(map_object);
         }

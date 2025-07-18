@@ -24,6 +24,7 @@ public:
         ) = 0;
 
         virtual void AddMapObject(
+                std::string name,
                 MapObjectType type,
                 std::string path,
                 std::vector<std::string> extra_data = {}
