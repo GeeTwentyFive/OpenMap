@@ -14,6 +14,7 @@ target_include_directories(
         PUBLIC .
         PUBLIC libs/raylib-gizmo
         PUBLIC libs/raylib/include
+        PUBLIC libs/lua/include
 )
 
 

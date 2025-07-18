@@ -2,8 +2,10 @@
         - Constructor (state)
         - SetFunction()
         - CallFunction()
+^ std::any_cast<T>()
 - (LUA) add_map_object(path, ...) -> (C++) AddMapObject(path, ...)
 - (C++) Export(data) -> (LUA) export(data) // if defined
+
 - ^ https://sol2.readthedocs.io/en/latest/api/variadic_args.html
 - MapObject struct
 - ^ main std::vector<MapObject>

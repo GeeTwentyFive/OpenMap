@@ -1,17 +1,22 @@
 #ifndef _OPENMAP_ILUA_HPP
 #define _OPENMAP_ILUA_HPP
 
-// LIBS:
-// - base
-// - package
-// - coroutine
-// - string
-// - os
-// - math
-// - table
-// - io
+#include <vector>
+#include <any>
 
-// TODO: https://sol2.readthedocs.io/en/latest/tutorial/all-the-things.html
-        // ^ + create & document Lua API
+class ILua {
+
+public:
+        template<typename Func>
+        void SetFunction(const char* function_name, Func body);
+
+        virtual void ExecuteFile(const char* target_file_path) = 0;
+
+        template<typename ...Args>
+        std::vector<std::any> CallFunction(const char* function_name, Args... args);
+
+        virtual ~ILua() = default;
+
+};
 
 #endif // _OPENMAP_ILUA_HPP

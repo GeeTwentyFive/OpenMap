@@ -3,6 +3,7 @@
 
 #include <src/INTERFACES/core/IDraw.hpp>
 #include <src/INTERFACES/core/IInput.hpp>
+#include <src/INTERFACES/core/ILua.hpp>
 
 
 class IEditor {
@@ -10,7 +11,8 @@ class IEditor {
 public:
         virtual int Run(
                 IDraw&& drawer,
-                IInput&& input
+                IInput&& input,
+                ILua&& lua
         ) = 0;
 
         virtual ~IEditor() = default;

@@ -3,6 +3,8 @@
 
 #include <src/INTERFACES/editor/IEditor.hpp>
 
+#include <iostream> // TEMP; TEST
+
 
 class Editor: public IEditor {
 
@@ -26,8 +28,19 @@ private:
 public:
         int Run(
                 IDraw&& drawer,
-                IInput&& input
+                IInput&& input,
+                ILua&& lua
         ) override {
+                lua.SetFunction(
+                        "test",
+                        [](){
+                                std::cout << "\n\n\tOUTPUT\n\n" << std::endl;
+                        }
+                );
+
+                lua.CallFunction("test");
+
+/*
                 while (!drawer.WindowShouldClose()) {
 
                         std::tuple<int, int> mouse_delta = input.GetMouseDelta();
@@ -67,6 +80,7 @@ public:
                         drawer.EndDrawing();
 
                 }
+*/
 
                 // TODO: Prompt to save before exiting if unsaved work
 
