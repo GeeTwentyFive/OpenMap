@@ -2,7 +2,6 @@
 
 #include <src/IMPLEMENTATIONS/core/IDraw/RaylibDrawer.hpp>
 #include <src/IMPLEMENTATIONS/core/IInput/RaylibInput.hpp>
-#include <src/IMPLEMENTATIONS/core/ILua/Lua.hpp>
 
 
 int main() {
@@ -15,8 +14,7 @@ int main() {
                                 FLAG_MSAA_4X_HINT
                         )
                 ),
-                RaylibInput(),
-                Lua()
+                RaylibInput()
         );
 
 }

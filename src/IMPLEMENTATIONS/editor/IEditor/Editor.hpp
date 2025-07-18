@@ -22,25 +22,26 @@ private:
         const IInput::Keycode KEY_CAMERA_DOWN = IInput::Keycode::LEFT_CONTROL;
 
 
+        struct MapObject {
+                std::string path;
+                std::array<float, 3> pos;
+                std::array<float, 3> rot;
+                std::array<float, 3> scale;
+                std::vector<std::string> extra_data;
+        };
+
+
+        std::vector<MapObject> map_objects;
+
         float camera_move_speed = MIN_CAMERA_MOVE_SPEED;
 
 
 public:
         int Run(
                 IDraw&& drawer,
-                IInput&& input,
-                ILua&& lua
+                IInput&& input
         ) override {
-                lua.SetFunction(
-                        "test",
-                        [](){
-                                std::cout << "\n\n\tOUTPUT\n\n" << std::endl;
-                        }
-                );
 
-                lua.CallFunction("test");
-
-/*
                 while (!drawer.WindowShouldClose()) {
 
                         std::tuple<int, int> mouse_delta = input.GetMouseDelta();
@@ -80,12 +81,18 @@ public:
                         drawer.EndDrawing();
 
                 }
-*/
 
                 // TODO: Prompt to save before exiting if unsaved work
 
                 return 0;
 
+        }
+
+        inline void AddMapObject(
+                std::string path,
+                std::vector<std::string> extra_data
+        ) override {
+                // TODO
         }
 
 };
