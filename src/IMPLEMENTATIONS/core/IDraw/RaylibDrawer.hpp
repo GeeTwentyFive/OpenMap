@@ -50,6 +50,8 @@ public:
 
                 rlSetClipPlanes(CAMERA_NEAR, CAMERA_FAR);
 
+                rlDisableBackfaceCulling();
+
                 SetExitKey(0);
 
         }

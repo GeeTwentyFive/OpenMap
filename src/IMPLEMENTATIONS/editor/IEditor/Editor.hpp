@@ -24,7 +24,6 @@ private:
 
 
         struct MapObject {
-                std::string name;
                 IDraw::Model* model;
                 std::vector<std::string> extra_data;
         };
@@ -39,7 +38,7 @@ private:
         };
 
 
-        std::vector<MapObject> map_objects;
+        std::map<std::string, MapObject> map_objects;
         std::vector<MapObjectInstance> map_object_instances;
 
         float camera_move_speed = MIN_CAMERA_MOVE_SPEED;
@@ -49,12 +48,17 @@ private:
         chaiscript::ChaiScript* chai;
 
 
-        void InstantiateMapObject(int index) {
+        void InstantiateMapObject(std::string name) {
+                if (map_objects.count(name) == 0) throw std::runtime_error(
+                        std::string("ERROR: InstantiateMapObject(): MapObject not found: ") +
+                        '"' + name + '"'
+                );
                 MapObjectInstance map_object_instance{
-                        .name = map_objects[index].name,
-                        .model = map_objects[index].model,
-                        .extra_data = map_objects[index].extra_data
+                        .name = name,
+                        .model = map_objects[name].model,
+                        .extra_data = map_objects[name].extra_data
                 };
+                // TODO: INSTANTIATE AT CAMERA POS
                 map_object_instance.scale[0] =
                         map_object_instance.scale[1] =
                                 map_object_instance.scale[2] = 1.0f;
@@ -73,20 +77,40 @@ public:
                 _input = input;
                 chai = new chaiscript::ChaiScript;
 
-                // TEMP; TEST
-                AddMapObject("Viking Room", MapObjectType::SPRITE, "viking_room.png");
-                InstantiateMapObject(0);
+                // Init ChaiScript -> MapObjects
+                chai->add_global_const(chaiscript::const_var(MapObjectType::MODEL), "MODEL");
+                chai->add_global_const(chaiscript::const_var(MapObjectType::SPRITE), "SPRITE");
+                chai->add(chaiscript::type_conversion<
+                                std::vector<chaiscript::Boxed_Value>,
+                                std::vector<std::string>
+                        >([](const std::vector<chaiscript::Boxed_Value>& bv){
+                                std::vector<std::string> result;
+                                for (chaiscript::Boxed_Value item : bv) {
+                                        result.push_back(chaiscript::boxed_cast<std::string>(item));
+                                }
+                                return result;
+                        })
+                );
+                chai->add(chaiscript::fun([this](
+                                std::string name,
+                                MapObjectType type,
+                                std::string path,
+                                std::vector<std::string> extra_data
+                        ){
+                                this->AddMapObject(name, type, path, extra_data);
+                        }),
+                        "AddMapObject"
+                );
+                try { chai->eval_file(config_file_name); }
+                catch(const std::exception& e) {
+                        throw std::runtime_error(
+                                std::string("ERROR: Failed to read OpenMap config: ") +
+                                '"' + config_file_name + '"' +
+                                "\nChaiScript's error: " + e.what()
+                        );
+                }
 
-                //// Init ChaiScript -> MapObjects
-                //// TODO: Add AddMapObjects to ChaiScript
-                //try { chai->eval_file(config_file_name); }
-                //catch(const std::exception& e) {
-                //        throw std::runtime_error(
-                //                std::string("ERROR: Failed to read OpenMap config: ") +
-                //                '"' + config_file_name + '"' +
-                //                "\nChaiScript's error: " + e.what()
-                //        );
-                //}
+                InstantiateMapObject("Viking Room Sprite");
 
                 while (!_drawer->WindowShouldClose()) {
 
@@ -146,7 +170,6 @@ public:
                 std::vector<std::string> extra_data = {}
         ) override {
                 MapObject map_object{};
-                map_object.name = name;
                 switch (type) {
                         case MapObjectType::MODEL:
                         {
@@ -161,7 +184,7 @@ public:
                         break;
                 }
                 map_object.extra_data = extra_data;
-                map_objects.push_back(map_object);
+                map_objects[name] = map_object;
         }
 
         inline void Export(std::string path) override {
