@@ -1,6 +1,7 @@
 #ifndef _OPENMAP_IDRAW_HPP
 #define _OPENMAP_IDRAW_HPP
 
+#include <array>
 
 class IDraw {
 
@@ -16,6 +17,8 @@ public:
         virtual bool WindowShouldClose() = 0;
 
         virtual void UpdateCamera(float movement[3], float rotation[2]) = 0;
+
+        virtual std::array<float, 3> GetCameraPosition() = 0;
 
         virtual void BeginDrawing(int clear_color = 0x000000ff) = 0;
 

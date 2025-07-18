@@ -122,6 +122,14 @@ public:
                 );
         }
 
+        inline std::array<float, 3> GetCameraPosition() override {
+                return std::array<float, 3>{
+                        camera.position.x,
+                        camera.position.y,
+                        camera.position.z
+                };
+        }
+
         inline void BeginDrawing(int clear_color = 0x000000ff) override {
                 ::BeginDrawing();
                 ClearBackground(

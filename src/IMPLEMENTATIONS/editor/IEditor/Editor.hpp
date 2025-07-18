@@ -4,6 +4,7 @@
 #include <src/INTERFACES/editor/IEditor.hpp>
 
 #include <stdexcept>
+#include <array>
 #include <libs/chaiscript/chaiscript.hpp>
 
 
@@ -49,20 +50,29 @@ private:
 
 
         void InstantiateMapObject(std::string name) {
+
                 if (map_objects.count(name) == 0) throw std::runtime_error(
                         std::string("ERROR: InstantiateMapObject(): MapObject not found: ") +
                         '"' + name + '"'
                 );
+
                 MapObjectInstance map_object_instance{
                         .name = name,
                         .model = map_objects[name].model,
                         .extra_data = map_objects[name].extra_data
                 };
-                // TODO: INSTANTIATE AT CAMERA POS
+
+                std::array<float, 3> camera_position = _drawer->GetCameraPosition();
+                map_object_instance.pos[0] = camera_position[0];
+                map_object_instance.pos[1] = camera_position[1];
+                map_object_instance.pos[2] = camera_position[2];
+
                 map_object_instance.scale[0] =
                         map_object_instance.scale[1] =
                                 map_object_instance.scale[2] = 1.0f;
+
                 map_object_instances.push_back(map_object_instance);
+
         }
 
 
@@ -110,8 +120,7 @@ public:
                         );
                 }
 
-                InstantiateMapObject("Viking Room Sprite");
-
+                // Main loop
                 while (!_drawer->WindowShouldClose()) {
 
                         std::tuple<int, int> mouse_delta = _input->GetMouseDelta();
