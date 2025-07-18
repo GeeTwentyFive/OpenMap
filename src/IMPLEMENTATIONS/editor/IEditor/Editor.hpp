@@ -5,7 +5,9 @@
 
 #include <stdexcept>
 #include <array>
+#include <fstream>
 #include <libs/chaiscript/chaiscript.hpp>
+#include <libs/nlohmann/json.hpp>
 
 
 class Editor: public IEditor {
@@ -15,7 +17,6 @@ private:
         const float MIN_CAMERA_MOVE_SPEED = 0.1f;
 
         const IInput::MouseButton BTN_CAMERA_TOGGLE = IInput::MouseButton::RIGHT;
-
         const IInput::Keycode KEY_CAMERA_FORWARD = IInput::Keycode::W;
         const IInput::Keycode KEY_CAMERA_BACK = IInput::Keycode::S;
         const IInput::Keycode KEY_CAMERA_RIGHT = IInput::Keycode::A;
@@ -111,6 +112,15 @@ public:
                         }),
                         "AddMapObject"
                 );
+                chai->add(chaiscript::fun([this](
+                                std::string name,
+                                MapObjectType type,
+                                std::string path
+                        ){
+                                this->AddMapObject(name, type, path);
+                        }),
+                        "AddMapObject"
+                );
                 try { chai->eval_file(config_file_name); }
                 catch(const std::exception& e) {
                         throw std::runtime_error(
@@ -166,7 +176,7 @@ public:
 
                 }
 
-                // TODO: Prompt to save before exiting if unsaved work
+                Export("MAP.json"); // TEMP; TEST
 
                 return 0;
 
@@ -196,7 +206,9 @@ public:
                 map_objects[name] = map_object;
         }
 
+
         inline void Export(std::string path) override {
+                // TODO(?): Define extra functions for "export.chai"?
                 // TODO:
                 // - Check if "export.chai" exists
                 //      - ^ if so:
@@ -204,6 +216,23 @@ public:
                 //              - ^ extract string output as .c_str()
                 //              - ^ write to <path> file
                 //      - ^ if not: export as JSON
+                {
+                        nlohmann::json j_array = nlohmann::json::array();
+                        for (MapObjectInstance m : map_object_instances) {
+                                nlohmann::json j_instance;
+                                j_instance["name"] = m.name;
+                                j_instance["position"] = {m.pos[0], m.pos[1], m.pos[2]};
+                                j_instance["rotation"] = {m.rot[0], m.rot[1], m.rot[2]};
+                                j_instance["scale"] = {m.scale[0], m.scale[1], m.scale[2]};
+                                j_instance["extra_data"] = m.extra_data;
+
+                                j_array.push_back(j_instance);
+                        }
+
+                        std::ofstream out_file(path);
+                        out_file << j_array.dump(4);
+                        out_file.close();
+                }
         }
 
 };

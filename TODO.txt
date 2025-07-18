@@ -1,10 +1,8 @@
-- (SCRIPT) add_map_object(path, ...) -> (C++) AddMapObject(path, ...)
 - (C++) Export(data) -> (SCRIPT) export(data) // if defined
-
-- ^ https://sol2.readthedocs.io/en/latest/api/variadic_args.html
-- MapObject struct
-- ^ main std::vector<MapObject>
+- JSON export
+- IGUI.hpp
 - https://www.raylib.com/examples/core/loader.html?name=core_3d_picking + GetMeshBoundingBox()
 - Save prompt on quit if unsaved work
+- freopen(<LOG_FILE_PATH>, "w", stderr) // <- + one for stdout
 
-https://json.nlohmann.me/features/arbitrary_types/#basic-usage
+- IScript.hpp?
