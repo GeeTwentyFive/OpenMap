@@ -47,7 +47,7 @@ private:
 
         IDraw* _drawer = nullptr;
         IInput* _input = nullptr;
-        chaiscript::ChaiScript* chai;
+        const char* _export_script_file_name = nullptr;
 
 
         void InstantiateMapObject(std::string name) {
@@ -82,16 +82,17 @@ public:
                 IDraw* drawer,
                 IInput* input,
                 const char* config_file_name,
-                const char* export_file_name = 0
+                const char* export_script_file_name = 0
         ) override {
                 _drawer = drawer;
                 _input = input;
-                chai = new chaiscript::ChaiScript;
+                _export_script_file_name = export_script_file_name;
 
-                // Init ChaiScript -> MapObjects
-                chai->add_global_const(chaiscript::const_var(MapObjectType::MODEL), "MODEL");
-                chai->add_global_const(chaiscript::const_var(MapObjectType::SPRITE), "SPRITE");
-                chai->add(chaiscript::type_conversion<
+                // Init config.chai ChaiScript -> execute and get MapObjects
+                chaiscript::ChaiScript config_chai;
+                config_chai.add_global_const(chaiscript::const_var(MapObjectType::MODEL), "MODEL");
+                config_chai.add_global_const(chaiscript::const_var(MapObjectType::SPRITE), "SPRITE");
+                config_chai.add(chaiscript::type_conversion<
                                 std::vector<chaiscript::Boxed_Value>,
                                 std::vector<std::string>
                         >([](const std::vector<chaiscript::Boxed_Value>& bv){
@@ -102,7 +103,7 @@ public:
                                 return result;
                         })
                 );
-                chai->add(chaiscript::fun([this](
+                config_chai.add(chaiscript::fun([this](
                                 std::string name,
                                 MapObjectType type,
                                 std::string path,
@@ -112,7 +113,7 @@ public:
                         }),
                         "AddMapObject"
                 );
-                chai->add(chaiscript::fun([this](
+                config_chai.add(chaiscript::fun([this](
                                 std::string name,
                                 MapObjectType type,
                                 std::string path
@@ -121,7 +122,7 @@ public:
                         }),
                         "AddMapObject"
                 );
-                try { chai->eval_file(config_file_name); }
+                try { config_chai.eval_file(config_file_name); }
                 catch(const std::exception& e) {
                         throw std::runtime_error(
                                 std::string("ERROR: Failed to read OpenMap config: ") +
@@ -208,15 +209,15 @@ public:
 
 
         inline void Export(std::string path) override {
-                // TODO(?): Define extra functions for "export.chai"?
-                // TODO:
-                // - Check if "export.chai" exists
-                //      - ^ if so:
-                //              - call export(map_objects)
-                //              - ^ extract string output as .c_str()
-                //              - ^ write to <path> file
-                //      - ^ if not: export as JSON
-                {
+                chaiscript::ChaiScript export_chai;
+                try { export_chai.eval_file(_export_script_file_name); }
+                catch(const std::exception& e) {
+                        std::cout << "Export script " <<
+                                '"' << _export_script_file_name << '"' <<
+                                " not found or failed. Exporting as JSON." <<
+                                "\n^ ChaiScript's error: " << e.what() <<
+                                std::endl;
+
                         nlohmann::json j_array = nlohmann::json::array();
                         for (MapObjectInstance m : map_object_instances) {
                                 nlohmann::json j_instance;
@@ -232,7 +233,28 @@ public:
                         std::ofstream out_file(path);
                         out_file << j_array.dump(4);
                         out_file.close();
+
+                        return;
                 }
+
+                // TODO: Define MapObjectInstance in export_chai script
+
+                std::function<std::string(std::vector<MapObjectInstance>)> get_export_map_data;
+                try { get_export_map_data = export_chai.eval<std::function<std::string(std::vector<MapObjectInstance>)>>("export"); }
+                catch(const std::exception& e) {
+                        throw std::runtime_error(
+                                std::string("ERROR: Failed to get function \"export\" from export script: ") +
+                                '"' + _export_script_file_name + '"' +
+                                "\n^ ChaiScript's error: " + e.what()
+                        );
+                }
+
+                std::string export_map_data = get_export_map_data(map_object_instances);
+
+                std::ofstream out_file(path);
+                out_file << export_map_data;
+                out_file.close();
+
         }
 
 };

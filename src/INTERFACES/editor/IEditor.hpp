@@ -20,7 +20,7 @@ public:
                 IDraw* drawer,
                 IInput* input,
                 const char* config_file_name,
-                const char* export_file_name = 0
+                const char* export_script_file_name = 0
         ) = 0;
 
         virtual void AddMapObject(
