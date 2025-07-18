@@ -177,7 +177,7 @@ public:
 
                 }
 
-                Export("MAP.json"); // TEMP; TEST
+                Export("MAP.CUSTOM_FORMAT"); // TEMP; TEST
 
                 return 0;
 
