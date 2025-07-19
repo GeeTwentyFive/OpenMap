@@ -3,6 +3,7 @@
 
 #include <src/INTERFACES/editor/IEditor.hpp>
 
+#include <unordered_map>
 #include <stdexcept>
 #include <array>
 #include <fstream>
@@ -36,11 +37,11 @@ private:
                 float pos[3];
                 float rot[3];
                 float scale[3];
-                std::vector<std::string> extra_data;
+                std::unordered_map<std::string, std::string> extra_data;
         };
 
 
-        std::map<std::string, MapObject> map_objects;
+        std::unordered_map<std::string, MapObject> map_objects;
         std::vector<MapObjectInstance> map_object_instances;
 
         float camera_move_speed = MIN_CAMERA_MOVE_SPEED;
@@ -50,7 +51,13 @@ private:
         const char* _export_script_file_name = nullptr;
 
 
-        void InstantiateMapObject(std::string name) {
+        void InstantiateMapObject(
+                std::string name,
+                float pos[3],
+                float rot[3],
+                float scale[3],
+                std::unordered_map<std::string, std::string> extra_data = {}
+        ) {
 
                 if (map_objects.count(name) == 0) throw std::runtime_error(
                         std::string("ERROR: InstantiateMapObject(): MapObject not found: ") +
@@ -60,17 +67,26 @@ private:
                 MapObjectInstance map_object_instance{
                         .name = name,
                         .model = map_objects[name].model,
-                        .extra_data = map_objects[name].extra_data
                 };
 
-                std::array<float, 3> camera_position = _drawer->GetCameraPosition();
-                map_object_instance.pos[0] = camera_position[0];
-                map_object_instance.pos[1] = camera_position[1];
-                map_object_instance.pos[2] = camera_position[2];
+                if (extra_data.empty()) {
+                        for (std::string field : map_objects[name].extra_data) {
+                                map_object_instance.extra_data[field] = "";
+                        }
+                }
+                else map_object_instance.extra_data = extra_data;
 
-                map_object_instance.scale[0] =
-                        map_object_instance.scale[1] =
-                                map_object_instance.scale[2] = 1.0f;
+                map_object_instance.pos[0] = pos[0];
+                map_object_instance.pos[1] = pos[1];
+                map_object_instance.pos[2] = pos[2];
+
+                map_object_instance.rot[0] = rot[0];
+                map_object_instance.rot[1] = rot[1];
+                map_object_instance.rot[2] = rot[2];
+
+                map_object_instance.scale[0] = scale[0];
+                map_object_instance.scale[1] = scale[1];
+                map_object_instance.scale[2] = scale[2];
 
                 map_object_instances.push_back(map_object_instance);
 
@@ -131,7 +147,14 @@ public:
                         );
                 }
 
-                InstantiateMapObject("Viking Room Sprite"); // TEMP; TEST
+                // TEMP; TEST:
+                std::array<float, 3> camera_pos = _drawer->GetCameraPosition();
+                InstantiateMapObject(
+                        "Viking Room Sprite",
+                        (float[3]){camera_pos[0], camera_pos[1], camera_pos[2]},
+                        (float[3]){0.0f, 0.0f, 0.0f},
+                        (float[3]){1.0f, 1.0f, 1.0f}
+                );
 
                 // Main loop
                 while (!_drawer->WindowShouldClose()) {
