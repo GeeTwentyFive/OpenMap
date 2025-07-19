@@ -52,6 +52,89 @@ private:
         chaiscript::ChaiScript config_chai;
 
 
+        void InitConfigScript() {
+                // AddMapObject()
+                config_chai.add_global_const(chaiscript::const_var(MapObjectType::MODEL), "MODEL");
+                config_chai.add_global_const(chaiscript::const_var(MapObjectType::SPRITE), "SPRITE");
+                // (to convert from chaiscript::Boxed_Value to std::string
+                // when calling C++ from ChaiScript with string as argument)
+                config_chai.add(chaiscript::type_conversion<
+                                std::vector<chaiscript::Boxed_Value>,
+                                std::vector<std::string>
+                        >([](const std::vector<chaiscript::Boxed_Value>& bv){
+                                std::vector<std::string> result;
+                                for (chaiscript::Boxed_Value item : bv) {
+                                        result.push_back(chaiscript::boxed_cast<std::string>(item));
+                                }
+                                return result;
+                        })
+                );
+                config_chai.add(chaiscript::fun([this](
+                                std::string name,
+                                MapObjectType type,
+                                std::string path,
+                                std::vector<std::string> extra_data
+                        ){
+                                this->AddMapObject(name, type, path, extra_data);
+                        }),
+                        "AddMapObject"
+                );
+                config_chai.add(chaiscript::fun([this](
+                                std::string name,
+                                MapObjectType type,
+                                std::string path
+                        ){
+                                this->AddMapObject(name, type, path);
+                        }),
+                        "AddMapObject"
+                );
+
+                // MapObjectInstance
+                config_chai.add(chaiscript::user_type<MapObjectInstance>(), "MapObjectInstance");
+                config_chai.add(chaiscript::fun(&MapObjectInstance::name), "name");
+                config_chai.add(chaiscript::user_type<std::array<float, 3>>(), "Vector3");
+                config_chai.add(
+                        chaiscript::fun(
+                                [](std::array<float, 3>& array, size_t index) -> float& {
+                                        return array[index];
+                                }
+                        ),
+                        "[]"
+                );
+                config_chai.add(
+                        chaiscript::fun(
+                                [](float f, std::string s) -> std::string {
+                                        return std::to_string(f) + s;
+                                }
+                        ),
+                        "+"
+                );
+                config_chai.add(
+                        chaiscript::fun(
+                                [](std::string s, float f) -> std::string {
+                                        return s + std::to_string(f);
+                                }
+                        ),
+                        "+"
+                );
+                config_chai.add(chaiscript::fun(&MapObjectInstance::pos), "pos");
+                config_chai.add(chaiscript::fun(&MapObjectInstance::rot), "rot");
+                config_chai.add(chaiscript::fun(&MapObjectInstance::scale), "scale");
+                config_chai.add(chaiscript::user_type<std::unordered_map<std::string, std::string>>(), "StringMap");
+                config_chai.add(
+                        chaiscript::fun(
+                                [](const std::unordered_map<std::string, std::string>& m) -> std::vector<std::pair<std::string, std::string>> {
+                                        return std::vector<std::pair<std::string, std::string>>(m.begin(), m.end());
+                                }
+                        ),
+                        "range"
+                );
+                config_chai.add(chaiscript::fun(&MapObjectInstance::extra_data), "extra_data");
+                chaiscript::ModulePtr m = chaiscript::ModulePtr(new chaiscript::Module());
+                chaiscript::bootstrap::standard_library::vector_type<std::vector<MapObjectInstance>>("VectorMapObjectInstance", *m);
+                config_chai.add(m);
+        }
+
         void InstantiateMapObject(
                 std::string name,
                 std::array<float, 3> pos,
@@ -95,46 +178,9 @@ public:
                 _drawer = drawer;
                 _input = input;
 
-                // Init config ChaiScript
-                config_chai.add_global_const(chaiscript::const_var(MapObjectType::MODEL), "MODEL");
-                config_chai.add_global_const(chaiscript::const_var(MapObjectType::SPRITE), "SPRITE");
-                config_chai.add(chaiscript::type_conversion<
-                                std::vector<chaiscript::Boxed_Value>,
-                                std::vector<std::string>
-                        >([](const std::vector<chaiscript::Boxed_Value>& bv){
-                                std::vector<std::string> result;
-                                for (chaiscript::Boxed_Value item : bv) {
-                                        result.push_back(chaiscript::boxed_cast<std::string>(item));
-                                }
-                                return result;
-                        })
-                );
-                config_chai.add(chaiscript::fun([this](
-                                std::string name,
-                                MapObjectType type,
-                                std::string path,
-                                std::vector<std::string> extra_data
-                        ){
-                                this->AddMapObject(name, type, path, extra_data);
-                        }),
-                        "AddMapObject"
-                );
-                config_chai.add(chaiscript::fun([this](
-                                std::string name,
-                                MapObjectType type,
-                                std::string path
-                        ){
-                                this->AddMapObject(name, type, path);
-                        }),
-                        "AddMapObject"
-                );
-                config_chai.add(chaiscript::user_type<MapObjectInstance>(), "MapObjectInstance");
-                config_chai.add(chaiscript::fun(&MapObjectInstance::name), "name");
-                chaiscript::ModulePtr m = chaiscript::ModulePtr(new chaiscript::Module());
-                chaiscript::bootstrap::standard_library::vector_type<std::vector<MapObjectInstance>>("VectorMapObjectInstance", *m);
-                config_chai.add(m);
+                InitConfigScript();
 
-                // Execute config ChaiScript -> get MapObjects
+                // Execute config script -> get MapObjects
                 try { config_chai.eval_file(config_script_file_name); }
                 catch(const std::exception& e) {
                         throw std::runtime_error(
@@ -147,10 +193,20 @@ public:
                 // TEMP; TEST:
                 std::array<float, 3> camera_pos = _drawer->GetCameraPosition();
                 InstantiateMapObject(
-                        "Viking Room Sprite",
+                        "Viking Room Model",
                         camera_pos,
                         {0.0f, 0.0f, 0.0f},
                         {1.0f, 1.0f, 1.0f}
+                );
+                InstantiateMapObject(
+                        "Viking Room Sprite",
+                        camera_pos,
+                        {0.0f, 0.0f, 0.0f},
+                        {1.0f, 1.0f, 1.0f},
+                        {
+                                {"TEST_FIELD_1", "TEST_DATA_1"},
+                                {"TEST_FIELD_2", "TEST_DATA_2"}
+                        }
                 );
 
                 // Main loop
