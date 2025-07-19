@@ -14,6 +14,18 @@ public:
                 std::array<float, 3> max;
         };
 
+        struct Ray {
+                std::array<float, 3> pos;
+                std::array<float, 3> direction;
+        };
+
+        struct RayCollision {
+                bool hit;
+                float distance_to_hit;
+                std::array<float, 3> hit_point;
+                std::array<float, 3> hit_normal;
+        };
+
 
         virtual Model* LoadModel(const char* target_file_path) = 0;
         virtual Model* LoadSprite(const char* target_file_path) = 0;
@@ -37,6 +49,10 @@ public:
 
         virtual BoundingBox GetModelBoundingBox(Model* model) = 0;
         virtual void DrawBoundingBox(BoundingBox bounding_box, int32_t color = 0xffffffff) = 0;
+
+        virtual Ray GetScreenToWorldRay(std::tuple<int, int> pos) = 0;
+
+        virtual RayCollision GetRayCollisionBox(Ray ray, BoundingBox box) = 0;
 
         virtual void EndDrawing() = 0;
 

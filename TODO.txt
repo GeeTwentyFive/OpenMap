@@ -1,4 +1,8 @@
-- Object selection: https://www.raylib.com/examples/core/loader.html?name=core_3d_picking + GetMeshBoundingBox()
+- FIX DUPLICATING MapObjects ON CLICK
+- Object selection:
+	- If selected obj var isn't nullptr:
+		- Show gizmo & handle/link movement
+		- Show inspector & show obj's **linked** data inside
 - IGUI.hpp (<- own BeginDrawing() & EndDrawing(), WITHOUT background clear)
 
 After Minimum Viable Product / first release:

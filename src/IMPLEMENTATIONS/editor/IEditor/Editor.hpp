@@ -201,20 +201,22 @@ public:
                         }
 
                         if (_input->IsMouseButtonPressed(BTN_SELECT_MAP_OBJECT)) {
-                                // TODO:
-                                // - Raycast for obj
-                                // - If hit:
-                                //      - Set selected obj var to it
-                                //      - Compare iterated obj below in drawing to it:
-                                //              - if is: draw wireframe box around it
-                                // - Else:
-                                //      - Set selected obj var to nullptr
-                                //
-                                // - If selected obj var isn't nullptr:
-                                //      - Show gizmo & handle/link movement
-                                //      - Show inspector & show obj's **linked** data inside
-
-                                //
+                                IDraw::Ray mouse_ray = _drawer->GetScreenToWorldRay(_input->GetCursorPos());
+                                for (MapObjectInstance map_object : map_object_instances) {
+                                        IDraw::RayCollision collision = (
+                                                _drawer->GetRayCollisionBox(
+                                                        mouse_ray,
+                                                        _drawer->GetModelBoundingBox(map_object.model)
+                                                )
+                                        );
+                                        if (collision.hit) {
+                                                selected_map_object_instance = &map_object;
+                                                std::cout << selected_map_object_instance->name << std::endl;
+                                        }
+                                        else {
+                                                selected_map_object_instance = nullptr;
+                                        }
+                                }
                         }
 
 
@@ -227,10 +229,10 @@ public:
                                                 map_object.rot,
                                                 map_object.scale
                                         );
+                                        if (&map_object == selected_map_object_instance) {
+                                                _drawer->DrawBoundingBox(_drawer->GetModelBoundingBox(map_object.model));
+                                        }
                                 }
-                                // TEMP; TEST:
-                                _drawer->DrawBoundingBox(_drawer->GetModelBoundingBox(map_object_instances[0].model));
-                                _drawer->DrawBoundingBox(_drawer->GetModelBoundingBox(map_object_instances[1].model));
                         }
                         _drawer->EndDrawing();
 

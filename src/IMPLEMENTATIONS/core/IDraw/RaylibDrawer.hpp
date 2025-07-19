@@ -229,6 +229,68 @@ public:
                 );
         }
 
+        inline Ray GetScreenToWorldRay(std::tuple<int, int> pos) override {
+                ::Ray ray = ::GetScreenToWorldRay(
+                        Vector2{(float)std::get<0>(pos), (float)std::get<1>(pos)},
+                        camera
+                );
+                return Ray{
+                        .pos = {
+                                ray.position.x,
+                                ray.position.y,
+                                ray.position.z
+                        },
+                        .direction = {
+                                ray.direction.x,
+                                ray.direction.y,
+                                ray.direction.z
+                        }
+                };
+        }
+
+        inline RayCollision GetRayCollisionBox(Ray ray, BoundingBox box) override {
+                ::RayCollision collision = ::GetRayCollisionBox(
+                        ::Ray{
+                                .position = Vector3{
+                                        ray.pos[0],
+                                        ray.pos[1],
+                                        ray.pos[2]
+                                },
+                                .direction = Vector3{
+                                        ray.direction[0],
+                                        ray.direction[1],
+                                        ray.direction[2]
+                                }
+                        },
+                        ::BoundingBox{
+                                .min = Vector3{
+                                        box.min[0],
+                                        box.min[1],
+                                        box.min[2]
+                                },
+                                .max = Vector3{
+                                        box.max[0],
+                                        box.max[1],
+                                        box.max[2]
+                                }
+                        }
+                );
+                return RayCollision{
+                        .hit = collision.hit,
+                        .distance_to_hit = collision.distance,
+                        .hit_point = {
+                                collision.point.x,
+                                collision.point.y,
+                                collision.point.z
+                        },
+                        .hit_normal = {
+                                collision.normal.x,
+                                collision.normal.y,
+                                collision.normal.z
+                        }
+                };
+        }
+
         inline void EndDrawing() override {
                 EndMode3D();
                 ::EndDrawing();
