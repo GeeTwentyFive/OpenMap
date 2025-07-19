@@ -101,7 +101,10 @@ public:
                 return ::WindowShouldClose();
         }
 
-        inline void UpdateCamera(float movement[3], float rotation[2]) override {
+        inline void UpdateCamera(
+                std::array<float, 3> movement,
+                std::array<float, 2> rotation
+        ) override {
                 UpdateCameraPro(
                         &camera,
                         Vector3{
@@ -144,9 +147,9 @@ public:
 
         inline void Draw(
                 Model* model,
-                float position[3],
-                float rotation[3],
-                float scale[3],
+                std::array<float, 3> position,
+                std::array<float, 3> rotation,
+                std::array<float, 3> scale,
                 int color_tint = 0xffffffff
         ) override {
                 BeginMode3D(camera);

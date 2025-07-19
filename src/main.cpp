@@ -7,7 +7,6 @@
 
 
 #define OPENMAP_CONFIG_SCRIPT "config.chai"
-#define OPENMAP_EXPORT_SCRIPT "export.chai"
 
 
 int main() {
@@ -22,8 +21,7 @@ int main() {
                                 )
                         ),
                         new RaylibInput(),
-                        OPENMAP_CONFIG_SCRIPT,
-                        OPENMAP_EXPORT_SCRIPT
+                        OPENMAP_CONFIG_SCRIPT
                 );
         } catch(const std::exception& e) {
                 std::cout << e.what() << std::endl;

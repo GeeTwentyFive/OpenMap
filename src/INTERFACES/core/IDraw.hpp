@@ -16,7 +16,7 @@ public:
 
         virtual bool WindowShouldClose() = 0;
 
-        virtual void UpdateCamera(float movement[3], float rotation[2]) = 0;
+        virtual void UpdateCamera(std::array<float, 3> movement, std::array<float, 2> rotation) = 0;
 
         virtual std::array<float, 3> GetCameraPosition() = 0;
 
@@ -24,9 +24,9 @@ public:
 
         virtual void Draw(
                 Model* model,
-                float position[3],
-                float rotation[3],
-                float scale[3],
+                std::array<float, 3> position,
+                std::array<float, 3> rotation,
+                std::array<float, 3> scale,
                 int color_tint = 0xffffffff
         ) = 0;
 

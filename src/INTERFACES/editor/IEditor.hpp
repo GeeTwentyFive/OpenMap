@@ -19,8 +19,7 @@ public:
         virtual int Run(
                 IDraw* drawer,
                 IInput* input,
-                const char* config_file_name,
-                const char* export_script_file_name = 0
+                const char* config_script_file_name
         ) = 0;
 
         virtual void AddMapObject(
