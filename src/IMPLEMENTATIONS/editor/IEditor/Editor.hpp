@@ -18,6 +18,8 @@ private:
         const float MIN_CAMERA_MOVE_SPEED = 0.1f;
         const char* QUIT_SAVE_FILE_NAME = "QUITSAVE";
 
+        const IInput::MouseButton BTN_SELECT_MAP_OBJECT = IInput::MouseButton::LEFT;
+
         const IInput::MouseButton BTN_CAMERA_TOGGLE = IInput::MouseButton::RIGHT;
         const IInput::Keycode KEY_CAMERA_FORWARD = IInput::Keycode::W;
         const IInput::Keycode KEY_CAMERA_BACK = IInput::Keycode::S;
@@ -44,6 +46,7 @@ private:
 
         std::unordered_map<std::string, MapObject> map_objects;
         std::vector<MapObjectInstance> map_object_instances;
+        MapObjectInstance* selected_map_object_instance = nullptr;
 
         float camera_move_speed = MIN_CAMERA_MOVE_SPEED;
 
@@ -195,6 +198,22 @@ public:
                         }
                         else {
                                 _input->UnlockCursor();
+                        }
+
+                        if (_input->IsMouseButtonPressed(BTN_SELECT_MAP_OBJECT)) {
+                                // TODO:
+                                // - Raycast for obj
+                                // - If hit:
+                                //      - Set selected obj var to it
+                                //      - Compare iterated obj below in drawing to it:
+                                //              - if is: draw wireframe box around it
+                                // - Else:
+                                //      - Set selected obj var to nullptr
+                                //
+                                // - If selected obj var isn't nullptr:
+                                //      - Show inspector & show obj's **linked** data inside
+
+                                //
                         }
 
 

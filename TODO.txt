@@ -1,5 +1,3 @@
-- Load()
-- New()
 - IGUI.hpp (<- own BeginDrawing() & EndDrawing(), WITHOUT background clear)
 - Object selection: https://www.raylib.com/examples/core/loader.html?name=core_3d_picking + GetMeshBoundingBox()
 - freopen(<LOG_FILE_PATH>, "w", stderr) // <- + one for stdout
