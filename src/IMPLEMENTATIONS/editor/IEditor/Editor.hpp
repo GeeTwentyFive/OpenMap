@@ -212,6 +212,8 @@ public:
 
                 Export("MAP.CUSTOM_FORMAT"); // TEMP; TEST
 
+                Save("QUITSAVE");
+
                 return 0;
 
         }
@@ -269,6 +271,27 @@ public:
 
                 map_object_instances.push_back(map_object_instance);
 
+        }
+
+        inline void Save(std::string path) {
+                nlohmann::json j_array = nlohmann::json::array();
+                for (MapObjectInstance m : map_object_instances) {
+                        nlohmann::json j_instance;
+                        j_instance["name"] = m.name;
+                        j_instance["position"] = m.pos;
+                        j_instance["rotation"] = m.rot;
+                        j_instance["scale"] = m.scale;
+                        j_instance["extra_data"] = m.extra_data;
+
+                        j_array.push_back(j_instance);
+                }
+
+                std::ofstream out_file(path);
+                out_file << j_array.dump(4);
+                out_file.close();
+        }
+        inline void Load(std::string path) {
+                // TODO: Don't crash app upon failed load, just print error & return
         }
 
         inline void Export(std::string path) override {
