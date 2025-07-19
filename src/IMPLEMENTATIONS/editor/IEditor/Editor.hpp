@@ -126,37 +126,6 @@ private:
                 config_chai.add(m);
         }
 
-        void InstantiateMapObject(
-                std::string name,
-                std::array<float, 3> pos,
-                std::array<float, 3> rot,
-                std::array<float, 3> scale,
-                std::string extra_data = {}
-        ) {
-
-                if (map_objects.count(name) == 0) throw std::runtime_error(
-                        std::string("ERROR: InstantiateMapObject(): MapObject not found: ") +
-                        '"' + name + '"'
-                );
-
-                MapObjectInstance map_object_instance{
-                        .name = name,
-                        .model = map_objects[name].model,
-                };
-
-                if (extra_data.empty()) {
-                        map_object_instance.extra_data = map_objects[name].extra_data;
-                }
-                else map_object_instance.extra_data = extra_data;
-
-                map_object_instance.pos = pos;
-                map_object_instance.rot = rot;
-                map_object_instance.scale = scale;
-
-                map_object_instances.push_back(map_object_instance);
-
-        }
-
 
 public:
         int Run(
@@ -271,6 +240,36 @@ public:
                 map_objects[name] = map_object;
         }
 
+        inline void InstantiateMapObject(
+                std::string name,
+                std::array<float, 3> pos,
+                std::array<float, 3> rot,
+                std::array<float, 3> scale,
+                std::string extra_data = {}
+        ) override {
+
+                if (map_objects.count(name) == 0) throw std::runtime_error(
+                        std::string("ERROR: InstantiateMapObject(): MapObject not found: ") +
+                        '"' + name + '"'
+                );
+
+                MapObjectInstance map_object_instance{
+                        .name = name,
+                        .model = map_objects[name].model,
+                };
+
+                if (extra_data.empty()) {
+                        map_object_instance.extra_data = map_objects[name].extra_data;
+                }
+                else map_object_instance.extra_data = extra_data;
+
+                map_object_instance.pos = pos;
+                map_object_instance.rot = rot;
+                map_object_instance.scale = scale;
+
+                map_object_instances.push_back(map_object_instance);
+
+        }
 
         inline void Export(std::string path) override {
                 std::function<std::string(std::vector<MapObjectInstance>)> get_export_data;

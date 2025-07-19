@@ -28,6 +28,14 @@ public:
                 std::string path,
                 std::string extra_data = {}
         ) = 0;
+        
+        virtual void InstantiateMapObject(
+                std::string name,
+                std::array<float, 3> pos,
+                std::array<float, 3> rot,
+                std::array<float, 3> scale,
+                std::string extra_data = {}
+        ) = 0;
 
         virtual void Export(std::string path) = 0;
 
