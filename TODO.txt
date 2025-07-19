@@ -1,8 +1,4 @@
-- (C++) Export(data) -> (SCRIPT) export(data) // if defined
-- JSON export
 - IGUI.hpp
 - https://www.raylib.com/examples/core/loader.html?name=core_3d_picking + GetMeshBoundingBox()
 - Save prompt on quit if unsaved work
 - freopen(<LOG_FILE_PATH>, "w", stderr) // <- + one for stdout
-
-- IScript.hpp?
