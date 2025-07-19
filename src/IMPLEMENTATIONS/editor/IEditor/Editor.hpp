@@ -149,21 +149,23 @@ public:
                         );
                 }
 
-                // TEMP; TEST:
-                std::array<float, 3> camera_pos = _drawer->GetCameraPosition();
-                InstantiateMapObject(
-                        "Viking Room Model",
-                        camera_pos,
-                        {0.0f, 0.0f, 0.0f},
-                        {1.0f, 1.0f, 1.0f}
-                );
-                InstantiateMapObject(
-                        "Viking Room Sprite",
-                        camera_pos,
-                        {0.0f, 0.0f, 0.0f},
-                        {1.0f, 1.0f, 1.0f},
-                        "TEST_FIELD_1: TEST_DATA_1\nTEST_FIELD_2: TEST_DATA_2"
-                );
+                //// TEMP; TEST:
+                //std::array<float, 3> camera_pos = _drawer->GetCameraPosition();
+                //InstantiateMapObject(
+                //        "Viking Room Model",
+                //        camera_pos,
+                //        {0.0f, 0.0f, 0.0f},
+                //        {1.0f, 1.0f, 1.0f}
+                //);
+                //InstantiateMapObject(
+                //        "Viking Room Sprite",
+                //        camera_pos,
+                //        {0.0f, 0.0f, 0.0f},
+                //        {1.0f, 1.0f, 1.0f},
+                //        "TEST_FIELD_1: TEST_DATA_1\nTEST_FIELD_2: TEST_DATA_2"
+                //);
+
+                Load(QUIT_SAVE_FILE_NAME);
 
                 // Main loop
                 while (!_drawer->WindowShouldClose()) {
@@ -292,7 +294,26 @@ public:
                 out_file.close();
         }
         inline void Load(std::string path) override {
-                // TODO: Don't crash app upon failed load, just print error & return
+                try {
+                        std::ifstream loaded_data(QUIT_SAVE_FILE_NAME);
+                        nlohmann::json j = nlohmann::json::parse(loaded_data);
+                        loaded_data.close();
+                        for (const auto& item : j) {
+                                InstantiateMapObject(
+                                        item.at("name").get<std::string>(),
+                                        item.at("position").get<std::array<float, 3>>(),
+                                        item.at("rotation").get<std::array<float, 3>>(),
+                                        item.at("scale").get<std::array<float, 3>>(),
+                                        item.at("extra_data").get<std::string>()
+                                );
+                        }
+                }
+                catch(const std::exception& e) {
+                        std::cout << "ERROR: Failed to load map project save file at path: " <<
+                        '"' << path << '"' <<
+                        "\n^ exception message: " << e.what()
+                        << std::endl;
+                }
         }
         inline void Clear() override {
                 map_object_instances.clear();
