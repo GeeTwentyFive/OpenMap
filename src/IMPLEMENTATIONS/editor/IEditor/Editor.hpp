@@ -28,7 +28,7 @@ private:
 
         struct MapObject {
                 IDraw::Model* model;
-                std::vector<std::string> extra_data;
+                std::string extra_data;
         };
 
         struct MapObjectInstance {
@@ -37,7 +37,7 @@ private:
                 std::array<float, 3> pos;
                 std::array<float, 3> rot;
                 std::array<float, 3> scale;
-                std::unordered_map<std::string, std::string> extra_data;
+                std::string extra_data;
         };
 
 
@@ -73,7 +73,7 @@ private:
                                 std::string name,
                                 MapObjectType type,
                                 std::string path,
-                                std::vector<std::string> extra_data
+                                std::string extra_data
                         ){
                                 this->AddMapObject(name, type, path, extra_data);
                         }),
@@ -120,15 +120,6 @@ private:
                 config_chai.add(chaiscript::fun(&MapObjectInstance::pos), "pos");
                 config_chai.add(chaiscript::fun(&MapObjectInstance::rot), "rot");
                 config_chai.add(chaiscript::fun(&MapObjectInstance::scale), "scale");
-                config_chai.add(chaiscript::user_type<std::unordered_map<std::string, std::string>>(), "StringMap");
-                config_chai.add(
-                        chaiscript::fun(
-                                [](const std::unordered_map<std::string, std::string>& m) -> std::vector<std::pair<std::string, std::string>> {
-                                        return std::vector<std::pair<std::string, std::string>>(m.begin(), m.end());
-                                }
-                        ),
-                        "range"
-                );
                 config_chai.add(chaiscript::fun(&MapObjectInstance::extra_data), "extra_data");
                 chaiscript::ModulePtr m = chaiscript::ModulePtr(new chaiscript::Module());
                 chaiscript::bootstrap::standard_library::vector_type<std::vector<MapObjectInstance>>("VectorMapObjectInstance", *m);
@@ -140,7 +131,7 @@ private:
                 std::array<float, 3> pos,
                 std::array<float, 3> rot,
                 std::array<float, 3> scale,
-                std::unordered_map<std::string, std::string> extra_data = {}
+                std::string extra_data = {}
         ) {
 
                 if (map_objects.count(name) == 0) throw std::runtime_error(
@@ -154,9 +145,7 @@ private:
                 };
 
                 if (extra_data.empty()) {
-                        for (std::string field : map_objects[name].extra_data) {
-                                map_object_instance.extra_data[field] = "";
-                        }
+                        map_object_instance.extra_data = map_objects[name].extra_data;
                 }
                 else map_object_instance.extra_data = extra_data;
 
@@ -203,10 +192,7 @@ public:
                         camera_pos,
                         {0.0f, 0.0f, 0.0f},
                         {1.0f, 1.0f, 1.0f},
-                        {
-                                {"TEST_FIELD_1", "TEST_DATA_1"},
-                                {"TEST_FIELD_2", "TEST_DATA_2"}
-                        }
+                        "TEST_FIELD_1: TEST_DATA_1\nTEST_FIELD_2: TEST_DATA_2"
                 );
 
                 // Main loop
@@ -265,7 +251,7 @@ public:
                 std::string name,
                 MapObjectType type,
                 std::string path,
-                std::vector<std::string> extra_data = {}
+                std::string extra_data = {}
         ) override {
                 MapObject map_object{};
                 switch (type) {
