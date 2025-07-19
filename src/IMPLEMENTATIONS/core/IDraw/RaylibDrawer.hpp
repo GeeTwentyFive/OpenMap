@@ -133,7 +133,7 @@ public:
                 };
         }
 
-        inline void BeginDrawing(int clear_color = 0x000000ff) override {
+        inline void BeginDrawing(int32_t clear_color = 0x000000ff) override {
                 ::BeginDrawing();
                 ClearBackground(
                         Color{
@@ -143,6 +143,7 @@ public:
                                 (unsigned char)((clear_color & 0x000000ff))
                         }
                 );
+                BeginMode3D(camera);
         }
 
         inline void Draw(
@@ -150,10 +151,8 @@ public:
                 std::array<float, 3> position,
                 std::array<float, 3> rotation,
                 std::array<float, 3> scale,
-                int color_tint = 0xffffffff
+                int32_t color_tint = 0xffffffff
         ) override {
-                BeginMode3D(camera);
-
                 ::Model _model = *(::Model*)model;
 
                 // Have to manually rotate since DrawModelEx() doesn't support multi-axis rotation...
@@ -189,11 +188,49 @@ public:
                                 (unsigned char)((color_tint & 0x000000ff))
                         }
                 );
+        }
 
-                EndMode3D();
+        inline BoundingBox GetModelBoundingBox(Model* model) override {
+                ::BoundingBox box = ::GetModelBoundingBox(*(::Model*)model);
+                return BoundingBox{
+                        {
+                                box.min.x,
+                                box.min.y,
+                                box.min.z
+                        },
+                        {
+                                box.max.x,
+                                box.max.y,
+                                box.max.z
+                        }
+                };
+        }
+
+        inline void DrawBoundingBox(BoundingBox bounding_box, int32_t color = 0xffffffff) {
+                ::DrawBoundingBox(
+                        ::BoundingBox{
+                                Vector3{
+                                        bounding_box.min[0],
+                                        bounding_box.min[1],
+                                        bounding_box.min[2]
+                                },
+                                Vector3{
+                                        bounding_box.max[0],
+                                        bounding_box.max[1],
+                                        bounding_box.max[2]
+                                }
+                        },
+                        Color{
+                                (unsigned char)((color & 0xff000000) >> 24),
+                                (unsigned char)((color & 0x00ff0000) >> 16),
+                                (unsigned char)((color & 0x0000ff00) >> 8),
+                                (unsigned char)((color & 0x000000ff))
+                        }
+                );
         }
 
         inline void EndDrawing() override {
+                EndMode3D();
                 ::EndDrawing();
         }
 

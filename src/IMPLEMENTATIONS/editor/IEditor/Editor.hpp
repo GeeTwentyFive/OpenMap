@@ -152,21 +152,21 @@ public:
                         );
                 }
 
-                //// TEMP; TEST:
-                //std::array<float, 3> camera_pos = _drawer->GetCameraPosition();
-                //InstantiateMapObject(
-                //        "Viking Room Model",
-                //        camera_pos,
-                //        {0.0f, 0.0f, 0.0f},
-                //        {1.0f, 1.0f, 1.0f}
-                //);
-                //InstantiateMapObject(
-                //        "Viking Room Sprite",
-                //        camera_pos,
-                //        {0.0f, 0.0f, 0.0f},
-                //        {1.0f, 1.0f, 1.0f},
-                //        "TEST_FIELD_1: TEST_DATA_1\nTEST_FIELD_2: TEST_DATA_2"
-                //);
+                // TEMP; TEST:
+                std::array<float, 3> camera_pos = _drawer->GetCameraPosition();
+                InstantiateMapObject(
+                        "Viking Room Model",
+                        camera_pos,
+                        {0.0f, 0.0f, 0.0f},
+                        {1.0f, 1.0f, 1.0f}
+                );
+                InstantiateMapObject(
+                        "Viking Room Sprite",
+                        camera_pos,
+                        {0.0f, 0.0f, 0.0f},
+                        {1.0f, 1.0f, 1.0f},
+                        "TEST_FIELD_1: TEST_DATA_1\nTEST_FIELD_2: TEST_DATA_2"
+                );
 
                 Load(QUIT_SAVE_FILE_NAME);
 
@@ -228,6 +228,9 @@ public:
                                                 map_object.scale
                                         );
                                 }
+                                // TEMP; TEST:
+                                _drawer->DrawBoundingBox(_drawer->GetModelBoundingBox(map_object_instances[0].model));
+                                _drawer->DrawBoundingBox(_drawer->GetModelBoundingBox(map_object_instances[1].model));
                         }
                         _drawer->EndDrawing();
 
