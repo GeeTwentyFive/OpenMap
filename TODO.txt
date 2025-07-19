@@ -1,6 +1,10 @@
-- Save() & Load()
-- ^ GET PERSISTENT APP DATA PATH
-- IGUI.hpp
-- https://www.raylib.com/examples/core/loader.html?name=core_3d_picking + GetMeshBoundingBox()
-- Save prompt on quit if unsaved work
+- Load()
+- New()
+- IGUI.hpp (<- own BeginDrawing() & EndDrawing(), WITHOUT background clear)
+- Object selection: https://www.raylib.com/examples/core/loader.html?name=core_3d_picking + GetMeshBoundingBox()
 - freopen(<LOG_FILE_PATH>, "w", stderr) // <- + one for stdout
+
+After Minimum Viable Product / first release:
+- Refactor Editor's ChaiScript implementation into INTERFACES/core/IScript + ChaiScript implementation
+- Refactor Editor's JSON implementation into INTERFACES/core/ISerializer + JSON implementation
+- Rename IDraw and RaylibDrawer into IRenderer and RaylibRenderer

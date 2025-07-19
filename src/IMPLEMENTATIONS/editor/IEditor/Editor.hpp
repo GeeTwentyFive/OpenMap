@@ -16,6 +16,7 @@ class Editor: public IEditor {
 private:
         const float MOUSE_SENSITIVITY = 0.1f;
         const float MIN_CAMERA_MOVE_SPEED = 0.1f;
+        const char* QUIT_SAVE_FILE_NAME = "QUITSAVE";
 
         const IInput::MouseButton BTN_CAMERA_TOGGLE = IInput::MouseButton::RIGHT;
         const IInput::Keycode KEY_CAMERA_FORWARD = IInput::Keycode::W;
@@ -212,7 +213,7 @@ public:
 
                 Export("MAP.CUSTOM_FORMAT"); // TEMP; TEST
 
-                Save("QUITSAVE");
+                Save(QUIT_SAVE_FILE_NAME);
 
                 return 0;
 
@@ -273,7 +274,7 @@ public:
 
         }
 
-        inline void Save(std::string path) {
+        inline void Save(std::string path) override {
                 nlohmann::json j_array = nlohmann::json::array();
                 for (MapObjectInstance m : map_object_instances) {
                         nlohmann::json j_instance;
@@ -290,8 +291,11 @@ public:
                 out_file << j_array.dump(4);
                 out_file.close();
         }
-        inline void Load(std::string path) {
+        inline void Load(std::string path) override {
                 // TODO: Don't crash app upon failed load, just print error & return
+        }
+        inline void Clear() override {
+                map_object_instances.clear();
         }
 
         inline void Export(std::string path) override {
