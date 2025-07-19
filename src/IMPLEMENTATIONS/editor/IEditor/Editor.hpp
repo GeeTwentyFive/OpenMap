@@ -211,6 +211,7 @@ public:
                                 //      - Set selected obj var to nullptr
                                 //
                                 // - If selected obj var isn't nullptr:
+                                //      - Show gizmo & handle/link movement
                                 //      - Show inspector & show obj's **linked** data inside
 
                                 //
