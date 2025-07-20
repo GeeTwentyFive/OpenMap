@@ -6,8 +6,8 @@ then export them to JSON (default) or to a custom format via a custom export fun
 
 ## Controls:
 - Right mouse button +
-        - Mouse move = look
-        - WASD/Space/Ctrl = move
+  - Mouse move = look
+  - WASD/Space/Ctrl = move
 - Scroll = change camera move speed
 - Middle mouse button = select/deselect existing MapObject
 - Left mouse button = move gizmo / interact with GUI
