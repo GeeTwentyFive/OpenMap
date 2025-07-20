@@ -1,8 +1,6 @@
-- FIX DUPLICATING MapObjects ON CLICK
-- Object selection:
-	- If selected obj var isn't nullptr:
-		- Show gizmo & handle/link movement
-		- Show inspector & show obj's **linked** data inside
+- If selected obj var isn't nullptr:
+	- Show gizmo & handle/link movement
+	- Show inspector & show obj's **linked** data inside
 - IGUI.hpp (<- own BeginDrawing() & EndDrawing(), WITHOUT background clear)
 
 After Minimum Viable Product / first release:

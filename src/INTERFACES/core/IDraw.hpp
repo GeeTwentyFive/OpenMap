@@ -48,11 +48,24 @@ public:
         ) = 0;
 
         virtual BoundingBox GetModelBoundingBox(Model* model) = 0;
+        virtual BoundingBox GetOffsetModelBoundingBox(
+                Model* model,
+                std::array<float, 3> translation_offset,
+                std::array<float, 3> rotation_offset,
+                std::array<float, 3> scale_offset
+        ) = 0;
         virtual void DrawBoundingBox(BoundingBox bounding_box, int32_t color = 0xffffffff) = 0;
 
         virtual Ray GetScreenToWorldRay(std::tuple<int, int> pos) = 0;
 
         virtual RayCollision GetRayCollisionBox(Ray ray, BoundingBox box) = 0;
+
+        virtual void HookGizmoTo(
+                std::array<float, 3>* OUT_pos,
+                std::array<float, 3>* OUT_rot,
+                std::array<float, 3>* OUT_scale
+        ) = 0;
+        virtual void DrawAndUpdateGizmo() = 0;
 
         virtual void EndDrawing() = 0;
 

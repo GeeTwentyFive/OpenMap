@@ -4,10 +4,13 @@
 #include <src/INTERFACES/core/IDraw.hpp>
 
 #include <stdexcept>
+#include <array>
+#include <float.h>
 #include <libs/raylib/include/raylib.h>
 #define RAYMATH_STATIC_INLINE
 #include <libs/raylib/include/raymath.h>
 #include <libs/raylib/include/rlgl.h>
+#include <libs/raylib-gizmo/raygizmo.h>
 
 
 class RaylibDrawer: public IDraw {
@@ -18,6 +21,13 @@ private:
 
 
         Camera camera;
+
+        struct {
+                Transform transform;
+                std::array<float, 3>* target_pos;
+                std::array<float, 3>* target_rot;
+                std::array<float, 3>* target_scale;
+        } gizmo_state;
 
 
 public:
@@ -60,7 +70,6 @@ public:
                 CloseWindow();
         }
 
-
         inline Model* LoadModel(const char* target_file_path) override {
                 ::Model* model = new ::Model;
                 *model = ::LoadModel(target_file_path);
@@ -95,7 +104,6 @@ public:
                 ::UnloadModel(*(::Model*)model);
                 delete model;
         }
-
 
         inline bool WindowShouldClose() override {
                 return ::WindowShouldClose();
@@ -206,6 +214,64 @@ public:
                 };
         }
 
+        inline BoundingBox GetOffsetModelBoundingBox(
+                Model* model,
+                std::array<float, 3> translation_offset,
+                std::array<float, 3> rotation_offset,
+                std::array<float, 3> scale_offset
+        ) override {
+                BoundingBox box = GetModelBoundingBox(model);
+
+                Matrix box_transform = MatrixMultiply(
+                        MatrixMultiply(
+                                MatrixScale(
+                                        scale_offset[0],
+                                        scale_offset[1],
+                                        scale_offset[2]
+                                ),
+                                QuaternionToMatrix(
+                                        QuaternionFromEuler(
+                                                rotation_offset[0],
+                                                rotation_offset[1],
+                                                rotation_offset[2]
+                                        )
+                                )
+                        ),
+                        MatrixTranslate(
+                                translation_offset[0],
+                                translation_offset[1],
+                                translation_offset[2]
+                        )
+                );
+
+                // Get the 8 corners of the bounding box
+                Vector3 corners[8] = {
+                        { box.min[0], box.min[1], box.min[2] },
+                        { box.min[0], box.min[1], box.max[2] },
+                        { box.min[0], box.max[1], box.min[2] },
+                        { box.min[0], box.max[1], box.max[2] },
+                        { box.max[0], box.min[1], box.min[2] },
+                        { box.max[0], box.min[1], box.max[2] },
+                        { box.max[0], box.max[1], box.min[2] },
+                        { box.max[0], box.max[1], box.max[2] },
+                };
+
+                // Transform all corners
+                std::array<float, 3> box_min = { FLT_MAX, FLT_MAX, FLT_MAX };
+                std::array<float, 3> box_max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+                for (int i = 0; i < 8; i++) {
+                        Vector3 t = Vector3Transform(corners[i], box_transform);
+                        if (t.x < box_min[0]) box_min[0] = t.x;
+                        if (t.y < box_min[1]) box_min[1] = t.y;
+                        if (t.z < box_min[2]) box_min[2] = t.z;
+                        if (t.x > box_max[0]) box_max[0] = t.x;
+                        if (t.y > box_max[1]) box_max[1] = t.y;
+                        if (t.z > box_max[2]) box_max[2] = t.z;
+                }
+
+                return BoundingBox{ box_min, box_max };
+        }
+
         inline void DrawBoundingBox(BoundingBox bounding_box, int32_t color = 0xffffffff) {
                 ::DrawBoundingBox(
                         ::BoundingBox{
@@ -288,6 +354,56 @@ public:
                                 collision.normal.y,
                                 collision.normal.z
                         }
+                };
+        }
+
+        inline void HookGizmoTo(
+                std::array<float, 3>* OUT_pos,
+                std::array<float, 3>* OUT_rot,
+                std::array<float, 3>* OUT_scale
+        ) override {
+                gizmo_state.target_pos = OUT_pos;
+                gizmo_state.target_rot = OUT_rot;
+                gizmo_state.target_scale = OUT_scale;
+
+                gizmo_state.transform = Transform{
+                        .translation = Vector3{
+                                .x = (*gizmo_state.target_pos)[0],
+                                .y = (*gizmo_state.target_pos)[1],
+                                .z = (*gizmo_state.target_pos)[2]
+                        },
+                        .rotation = QuaternionFromEuler(
+                                (*gizmo_state.target_rot)[0],
+                                (*gizmo_state.target_rot)[1],
+                                (*gizmo_state.target_rot)[2]
+                        ),
+                        .scale = Vector3{
+                                .x = (*gizmo_state.target_scale)[0],
+                                .y = (*gizmo_state.target_scale)[1],
+                                .z = (*gizmo_state.target_scale)[2]
+                        }
+                };
+        }
+
+        inline void DrawAndUpdateGizmo() override {
+                DrawGizmo3D(GIZMO_ALL, &gizmo_state.transform); // Updates gizmo as well
+                rlDisableBackfaceCulling(); // Undoes internal rlEnableBackfaceCulling()
+
+                (*gizmo_state.target_pos) = {
+                        gizmo_state.transform.translation.x,
+                        gizmo_state.transform.translation.y,
+                        gizmo_state.transform.translation.z
+                };
+                Vector3 new_rot = QuaternionToEuler(gizmo_state.transform.rotation);
+                (*gizmo_state.target_rot) = {
+                        new_rot.x,
+                        new_rot.y,
+                        new_rot.z
+                };
+                (*gizmo_state.target_scale) = {
+                        gizmo_state.transform.scale.x,
+                        gizmo_state.transform.scale.y,
+                        gizmo_state.transform.scale.z
                 };
         }
 

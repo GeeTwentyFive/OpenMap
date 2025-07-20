@@ -208,7 +208,12 @@ public:
                                         IDraw::RayCollision collision = (
                                                 _drawer->GetRayCollisionBox(
                                                         mouse_ray,
-                                                        _drawer->GetModelBoundingBox(map_object_instances[i].model)
+                                                        _drawer->GetOffsetModelBoundingBox(
+                                                                map_object_instances[i].model,
+                                                                map_object_instances[i].pos,
+                                                                map_object_instances[i].rot,
+                                                                map_object_instances[i].scale
+                                                        )
                                                 )
                                         );
                                         if (collision.hit) {
@@ -221,6 +226,13 @@ public:
                                                         closest_distance_to_hit = collision.distance_to_hit;
                                                 }
                                         }
+                                }
+                                if (selected_map_object_index >= 0) {
+                                        _drawer->HookGizmoTo(
+                                                &map_object_instances[selected_map_object_index].pos,
+                                                &map_object_instances[selected_map_object_index].rot,
+                                                &map_object_instances[selected_map_object_index].scale
+                                        );
                                 }
                         }
 
@@ -237,10 +249,14 @@ public:
                                 }
                                 if (selected_map_object_index >= 0) {
                                         _drawer->DrawBoundingBox(
-                                                _drawer->GetModelBoundingBox(
-                                                        map_object_instances[selected_map_object_index].model
+                                                _drawer->GetOffsetModelBoundingBox(
+                                                        map_object_instances[selected_map_object_index].model,
+                                                        map_object_instances[selected_map_object_index].pos,
+                                                        map_object_instances[selected_map_object_index].rot,
+                                                        map_object_instances[selected_map_object_index].scale
                                                 )
                                         );
+                                        _drawer->DrawAndUpdateGizmo();
                                 }
                         }
                         _drawer->EndDrawing();
