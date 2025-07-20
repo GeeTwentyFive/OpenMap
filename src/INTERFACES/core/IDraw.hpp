@@ -33,11 +33,14 @@ public:
 
         virtual bool WindowShouldClose() = 0;
 
+        virtual std::pair<int, int> GetScreenResolution() = 0;
+
         virtual void UpdateCamera(std::array<float, 3> movement, std::array<float, 2> rotation) = 0;
 
         virtual std::array<float, 3> GetCameraPosition() = 0;
 
         virtual void BeginDrawing(int32_t clear_color = 0x000000ff) = 0;
+        virtual void BeginMode3D() = 0; // "Temporary" sibling-dependant hack to make RayguiGUI work with RaylibDrawer
 
         virtual void Draw(
                 Model* model,
@@ -67,6 +70,7 @@ public:
         ) = 0;
         virtual void DrawAndUpdateGizmo() = 0;
 
+        virtual void EndMode3D() = 0; // "Temporary" sibling-dependant hack to make RayguiGUI work with RaylibDrawer
         virtual void EndDrawing() = 0;
 
         virtual ~IDraw() = default;

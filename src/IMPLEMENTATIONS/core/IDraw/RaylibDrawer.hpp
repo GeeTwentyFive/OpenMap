@@ -109,6 +109,13 @@ public:
                 return ::WindowShouldClose();
         }
 
+        inline std::pair<int, int> GetScreenResolution() override {
+                return std::pair<int, int>{
+                        GetScreenWidth(),
+                        GetScreenHeight()
+                };
+        }
+
         inline void UpdateCamera(
                 std::array<float, 3> movement,
                 std::array<float, 2> rotation
@@ -151,7 +158,9 @@ public:
                                 (unsigned char)((clear_color & 0x000000ff))
                         }
                 );
-                BeginMode3D(camera);
+        }
+        inline void BeginMode3D() override {
+                ::BeginMode3D(camera);
         }
 
         inline void Draw(
@@ -407,8 +416,10 @@ public:
                 };
         }
 
+        inline void EndMode3D() override {
+                ::EndMode3D();
+        }
         inline void EndDrawing() override {
-                EndMode3D();
                 ::EndDrawing();
         }
 

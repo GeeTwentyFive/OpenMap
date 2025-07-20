@@ -43,6 +43,10 @@ public:
                 std::map<std::string, std::string*> fields
         ) = 0;
 
+        virtual bool ShowConfirmBox(std::string text) = 0;
+
+        //virtual void ShowFilePicker() // TODO
+
         virtual ~IGUI() = default;
 
 };

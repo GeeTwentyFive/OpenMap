@@ -28,6 +28,8 @@ private:
         const IInput::Keycode KEY_CAMERA_UP = IInput::Keycode::SPACE;
         const IInput::Keycode KEY_CAMERA_DOWN = IInput::Keycode::LEFT_CONTROL;
 
+        const std::pair<int, int> MENU_BOX_OFFSET_RATIO = {20, 40};
+
 
         struct MapObject {
                 IDraw::Model* model;
@@ -52,6 +54,7 @@ private:
 
         IDraw* _drawer = nullptr;
         IInput* _input = nullptr;
+        IGUI* _gui = nullptr;
 
         chaiscript::ChaiScript config_chai;
 
@@ -135,10 +138,12 @@ public:
         int Run(
                 IDraw* drawer,
                 IInput* input,
+                IGUI* gui,
                 const char* config_script_file_name
         ) override {
                 _drawer = drawer;
                 _input = input;
+                _gui = gui;
 
                 InitConfigScript();
 
@@ -237,30 +242,74 @@ public:
                         }
 
 
+                        // TODO: REFACTOR
                         _drawer->BeginDrawing();
                         {
-                                for (MapObjectInstance map_object : map_object_instances) {
-                                        _drawer->Draw(
-                                                map_object.model,
-                                                map_object.pos,
-                                                map_object.rot,
-                                                map_object.scale
-                                        );
+                                _drawer->BeginMode3D();
+                                {
+                                        for (MapObjectInstance map_object : map_object_instances) {
+                                                _drawer->Draw(
+                                                        map_object.model,
+                                                        map_object.pos,
+                                                        map_object.rot,
+                                                        map_object.scale
+                                                );
+                                        }
+                                        if (selected_map_object_index >= 0) {
+                                                _drawer->DrawBoundingBox(
+                                                        _drawer->GetOffsetModelBoundingBox(
+                                                                map_object_instances[selected_map_object_index].model,
+                                                                map_object_instances[selected_map_object_index].pos,
+                                                                map_object_instances[selected_map_object_index].rot,
+                                                                map_object_instances[selected_map_object_index].scale
+                                                        )
+                                                );
+                                                _drawer->DrawAndUpdateGizmo();
+                                        }
                                 }
-                                if (selected_map_object_index >= 0) {
-                                        _drawer->DrawBoundingBox(
-                                                _drawer->GetOffsetModelBoundingBox(
-                                                        map_object_instances[selected_map_object_index].model,
-                                                        map_object_instances[selected_map_object_index].pos,
-                                                        map_object_instances[selected_map_object_index].rot,
-                                                        map_object_instances[selected_map_object_index].scale
-                                                )
-                                        );
-                                        _drawer->DrawAndUpdateGizmo();
-                                }
+                                _drawer->EndMode3D();
+
+                                std::pair<int, int> screen_res = _drawer->GetScreenResolution();
+                                _gui->DrawButtonsBox(
+                                        {0, 0},
+                                        {
+                                                screen_res.first / MENU_BOX_OFFSET_RATIO.first,
+                                                screen_res.second / MENU_BOX_OFFSET_RATIO.second
+                                        },
+                                        std::vector<IGUI::Button>{
+                                                IGUI::Button{
+                                                        "Save",
+                                                        [this](std::string) {
+                                                                // TODO
+                                                                std::cout << "SAVE PRESSED" << std::endl;
+                                                        }
+                                                },
+                                                IGUI::Button{
+                                                        "Load",
+                                                        [this](std::string) {
+                                                                // TODO
+                                                                std::cout << "LOAD PRESSED" << std::endl;
+                                                        }
+                                                },
+                                                IGUI::Button{
+                                                        "Export",
+                                                        [this](std::string) {
+                                                                // TODO
+                                                                std::cout << "EXPORT PRESSED" << std::endl;
+                                                        }
+                                                },
+                                                IGUI::Button{
+                                                        "Clear",
+                                                        [this](std::string) {
+                                                                if (_gui->ShowConfirmBox("Are you sure you want to CLEAR everything?")) {
+                                                                        this->Clear();
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                );
                         }
                         _drawer->EndDrawing();
-
                 }
 
                 Export("MAP.CUSTOM_FORMAT"); // TEMP; TEST

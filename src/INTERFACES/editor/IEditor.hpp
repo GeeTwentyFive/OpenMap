@@ -5,6 +5,7 @@
 #include <vector>
 #include <src/INTERFACES/core/IDraw.hpp>
 #include <src/INTERFACES/core/IInput.hpp>
+#include <src/INTERFACES/core/IGUI.hpp>
 
 
 class IEditor {
@@ -19,6 +20,7 @@ public:
         virtual int Run(
                 IDraw* drawer,
                 IInput* input,
+                IGUI* gui,
                 const char* config_script_file_name
         ) = 0;
 

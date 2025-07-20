@@ -4,6 +4,7 @@
 #include <iostream>
 #include <src/IMPLEMENTATIONS/core/IDraw/RaylibDrawer.hpp>
 #include <src/IMPLEMENTATIONS/core/IInput/RaylibInput.hpp>
+#include <src/IMPLEMENTATIONS/core/IGUI/RayguiGUI.hpp>
 
 
 #define LOG_FILE_NAME "OpenMap.log"
@@ -25,6 +26,7 @@ int main() {
                                 )
                         ),
                         new RaylibInput(),
+                        new RayguiGUI(),
                         OPENMAP_CONFIG_SCRIPT
                 );
         } catch(const std::exception& e) {
