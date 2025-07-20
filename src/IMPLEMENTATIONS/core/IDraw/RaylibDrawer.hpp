@@ -17,7 +17,7 @@ class RaylibDrawer: public IDraw {
 
 private:
         const double CAMERA_NEAR = 1.0f;
-	const double CAMERA_FAR = 10000.0f;
+	const double CAMERA_FAR = 100000.0f;
 
 
         Camera camera;

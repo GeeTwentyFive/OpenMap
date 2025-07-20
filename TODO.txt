@@ -1,9 +1,9 @@
-- If selected obj var isn't nullptr:
-	- Show gizmo & handle/link movement
-	- Show inspector & show obj's **linked** data inside
-- IGUI.hpp (<- own BeginDrawing() & EndDrawing(), WITHOUT background clear)
+- IGUI.hpp (<- own BeginDrawing() & EndDrawing(), WITHOUT background clear):
+        - If selected obj index isn't -1: Show inspector & show obj's **linked** data inside
+- Add example/ dir with example script & models to repo
 
 After Minimum Viable Product / first release:
 - Refactor Editor's ChaiScript implementation into INTERFACES/core/IScript + ChaiScript implementation
 - Refactor Editor's JSON implementation into INTERFACES/core/ISerializer + JSON implementation
 - Rename IDraw and RaylibDrawer into IRenderer and RaylibRenderer
+- Get window initialization & management *out* of ^ IDraw/IRenderer and into INTERFACES/core/IWindower

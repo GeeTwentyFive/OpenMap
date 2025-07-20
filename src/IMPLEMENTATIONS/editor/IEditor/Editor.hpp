@@ -18,7 +18,7 @@ private:
         const float MIN_CAMERA_MOVE_SPEED = 0.1f;
         const char* QUIT_SAVE_FILE_NAME = "QUITSAVE";
 
-        const IInput::MouseButton BTN_SELECT_MAP_OBJECT = IInput::MouseButton::LEFT;
+        const IInput::MouseButton BTN_SELECT_MAP_OBJECT = IInput::MouseButton::MIDDLE;
 
         const IInput::MouseButton BTN_CAMERA_TOGGLE = IInput::MouseButton::RIGHT;
         const IInput::Keycode KEY_CAMERA_FORWARD = IInput::Keycode::W;
