@@ -280,22 +280,19 @@ public:
                                                 IGUI::Button{
                                                         "Save",
                                                         [this](std::string) {
-                                                                // TODO
-                                                                std::cout << "SAVE PRESSED" << std::endl;
+                                                                this->Save(_gui->ShowTextInputBox("Enter path for save"));
                                                         }
                                                 },
                                                 IGUI::Button{
                                                         "Load",
                                                         [this](std::string) {
-                                                                // TODO
-                                                                std::cout << "LOAD PRESSED" << std::endl;
+                                                                this->Load(_gui->ShowTextInputBox("Enter path for load"));
                                                         }
                                                 },
                                                 IGUI::Button{
                                                         "Export",
                                                         [this](std::string) {
-                                                                // TODO
-                                                                std::cout << "EXPORT PRESSED" << std::endl;
+                                                                this->Export(_gui->ShowTextInputBox("Enter path for export"));
                                                         }
                                                 },
                                                 IGUI::Button{
@@ -389,12 +386,21 @@ public:
                 }
 
                 std::ofstream out_file(path);
+                if (!out_file) {
+                        std::cout << "ERROR: Failed to create save: " <<
+                        '"' << path << '"';
+                        return;
+                }
                 out_file << j_array.dump(4);
                 out_file.close();
         }
         inline void Load(std::string path) override {
                 try {
                         std::ifstream loaded_data(QUIT_SAVE_FILE_NAME);
+                        if (!loaded_data) throw std::runtime_error(
+                                std::string("ERROR: Failed to open file: ") +
+                                '"' + path + '"'
+                        );
                         nlohmann::json j = nlohmann::json::parse(loaded_data);
                         loaded_data.close();
                         for (const auto& item : j) {
@@ -439,6 +445,11 @@ public:
                         }
 
                         std::ofstream out_file(path);
+                        if (!out_file) {
+                                std::cout << "ERROR: Failed to export to file: " <<
+                                '"' << path << '"';
+                                return;
+                        }
                         out_file << j_array.dump(4);
                         out_file.close();
 

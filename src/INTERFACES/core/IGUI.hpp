@@ -25,7 +25,7 @@ public:
 
         virtual void DrawButtonsBox(
                 std::array<int, 2> top_left,
-                std::array<int, 2> bottom_right,
+                std::array<int, 2> size,
                 std::vector<Button> buttons
         ) = 0;
 
@@ -33,19 +33,19 @@ public:
 
         virtual void DrawImageButtonsList(
                 std::array<int, 2> top_left,
-                std::array<int, 2> bottom_right,
+                std::array<int, 2> size,
                 std::vector<ImageButton> buttons
         ) = 0;
 
         virtual void DrawInputBoxes(
                 std::array<int, 2> top_left,
-                std::array<int, 2> bottom_right,
+                std::array<int, 2> size,
                 std::map<std::string, std::string*> fields
         ) = 0;
 
         virtual bool ShowConfirmBox(std::string text) = 0;
 
-        //virtual void ShowFilePicker() // TODO
+        virtual std::string ShowTextInputBox(std::string prompt) = 0;
 
         virtual ~IGUI() = default;
 

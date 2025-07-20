@@ -13,18 +13,18 @@ class RayguiGUI : public IGUI {
 public:
         inline void DrawButtonsBox(
                 std::array<int, 2> top_left,
-                std::array<int, 2> bottom_right,
+                std::array<int, 2> size,
                 std::vector<Button> buttons
         ) override {
                 for (int i = 0; i < buttons.size(); i++) {
-                        int top = bottom_right[1] * i; // TEMP: Hacky solution; TODO: Refactor
+                        int top = size[1] * i; // TEMP: Hacky solution; TODO: Refactor
                         if (
                                 GuiButton(
                                         Rectangle{
                                                 (float)top_left[0],
                                                 (float)top,
-                                                (float)bottom_right[0],
-                                                (float)bottom_right[1]
+                                                (float)size[0],
+                                                (float)size[1]
                                         },
                                         buttons[i].label.c_str()
                                 )
@@ -40,7 +40,7 @@ public:
 
         inline void DrawImageButtonsList(
                 std::array<int, 2> top_left,
-                std::array<int, 2> bottom_right,
+                std::array<int, 2> size,
                 std::vector<ImageButton> buttons
         ) override {
                 // TODO
@@ -48,13 +48,13 @@ public:
 
         inline void DrawInputBoxes(
                 std::array<int, 2> top_left,
-                std::array<int, 2> bottom_right,
+                std::array<int, 2> size,
                 std::map<std::string, std::string*> fields
         ) override {
                 // TODO
         }
 
-        bool ShowConfirmBox(std::string text) override {
+        inline bool ShowConfirmBox(std::string text) override {
                 int screen_width = GetScreenWidth();
                 int screen_height = GetScreenHeight();
                 int result = -1;
@@ -75,6 +75,33 @@ public:
                 }
                 if (result == 1) return true;
                 else return false;
+        }
+
+        inline std::string ShowTextInputBox(std::string prompt) override {
+                int screen_width = GetScreenWidth();
+                int screen_height = GetScreenHeight();
+                int result = -1;
+                char text[1024];
+                while (result == -1) {
+                        BeginDrawing(); // "Temporary" hacky solution; TODO: Refactor
+                        result = GuiTextInputBox(
+                                Rectangle {
+                                        (float)screen_width / 4,
+                                        (float)screen_height / 4,
+                                        (float)screen_width / 2,
+                                        (float)screen_height / 2
+                                },
+                                "",
+                                prompt.c_str(),
+                                "Confirm;Cancel",
+                                text,
+                                sizeof(text),
+                                NULL
+                        );
+                        EndDrawing(); // "Temporary" hacky solution; TODO: Refactor
+                }
+                if (result != 1) return std::string();
+                return std::string(text);
         }
 
 };
