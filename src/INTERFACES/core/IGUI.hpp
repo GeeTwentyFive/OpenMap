@@ -40,7 +40,7 @@ public:
         virtual void DrawInputBoxes(
                 std::array<int, 2> top_left,
                 std::array<int, 2> size,
-                std::map<std::string, std::function<void(std::string)>> fields
+                std::map<std::string, std::string>* fields
         ) = 0;
 
         virtual bool ShowConfirmBox(std::string text) = 0;

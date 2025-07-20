@@ -50,6 +50,18 @@ private:
         std::unordered_map<std::string, MapObject> map_objects;
         std::vector<MapObjectInstance> map_object_instances;
         int selected_map_object_index = -1; // References index in `map_object_instances`
+        std::map<std::string, std::string> inspector_data = {
+                {"x pos", ""},
+                {"y pos", ""},
+                {"z pos", ""},
+                {"pitch", ""},
+                {"yaw", ""},
+                {"roll", ""},
+                {"x scale", ""},
+                {"y scale", ""},
+                {"z scale", ""},
+                {"extra data", ""}
+        };
 
         float camera_move_speed = MIN_CAMERA_MOVE_SPEED;
 
@@ -239,6 +251,17 @@ public:
                                                 &map_object_instances[selected_map_object_index].rot,
                                                 &map_object_instances[selected_map_object_index].scale
                                         );
+
+                                        inspector_data["x pos"] = std::to_string(map_object_instances[selected_map_object_index].pos[0]);
+                                        inspector_data["y pos"] = std::to_string(map_object_instances[selected_map_object_index].pos[1]);
+                                        inspector_data["z pos"] = std::to_string(map_object_instances[selected_map_object_index].pos[2]);
+                                        inspector_data["pitch"] = std::to_string(map_object_instances[selected_map_object_index].rot[0]);
+                                        inspector_data["yaw"] = std::to_string(map_object_instances[selected_map_object_index].rot[1]);
+                                        inspector_data["roll"] = std::to_string(map_object_instances[selected_map_object_index].rot[2]);
+                                        inspector_data["x scale"] = std::to_string(map_object_instances[selected_map_object_index].rot[0]);
+                                        inspector_data["y scale"] = std::to_string(map_object_instances[selected_map_object_index].rot[1]);
+                                        inspector_data["z scale"] = std::to_string(map_object_instances[selected_map_object_index].rot[2]);
+                                        inspector_data["extra data"] = map_object_instances[selected_map_object_index].extra_data;
                                 }
                         }
 
@@ -317,18 +340,18 @@ public:
                                                         INSPECTOR_HORIZ_OFFSET,
                                                         screen_res.second - ((screen_res.second / MENU_BOX_OFFSET_RATIO.second) * 4) // TEMP hack; TODO: Refactor
                                                 },
-                                                std::map<std::string, std::function<void(std::string)>>{
-                                                        {std::to_string(map_object_instances[selected_map_object_index].pos[0]), [this](std::string s){this->map_object_instances[selected_map_object_index].pos[0] = std::stoi(s);}},
-                                                        {std::to_string(map_object_instances[selected_map_object_index].pos[1]), [this](std::string s){this->map_object_instances[selected_map_object_index].pos[1] = std::stoi(s);}},
-                                                        {std::to_string(map_object_instances[selected_map_object_index].pos[2]), [this](std::string s){this->map_object_instances[selected_map_object_index].pos[2] = std::stoi(s);}},
-                                                        {std::to_string(map_object_instances[selected_map_object_index].rot[0]), [this](std::string s){this->map_object_instances[selected_map_object_index].rot[0] = std::stoi(s);}},
-                                                        {std::to_string(map_object_instances[selected_map_object_index].rot[1]), [this](std::string s){this->map_object_instances[selected_map_object_index].rot[1] = std::stoi(s);}},
-                                                        {std::to_string(map_object_instances[selected_map_object_index].rot[2]), [this](std::string s){this->map_object_instances[selected_map_object_index].rot[2] = std::stoi(s);}},
-                                                        {std::to_string(map_object_instances[selected_map_object_index].scale[0]), [this](std::string s){this->map_object_instances[selected_map_object_index].scale[0] = std::stoi(s);}},
-                                                        {std::to_string(map_object_instances[selected_map_object_index].scale[1]), [this](std::string s){this->map_object_instances[selected_map_object_index].scale[1] = std::stoi(s);}},
-                                                        {std::to_string(map_object_instances[selected_map_object_index].scale[2]), [this](std::string s){this->map_object_instances[selected_map_object_index].scale[2] = std::stoi(s);}},
-                                                }
+                                                &inspector_data
                                         );
+                                        //map_object_instances[selected_map_object_index].pos[0] = std::stof(inspector_data["x pos"]);
+                                        //map_object_instances[selected_map_object_index].pos[1] = std::stof(inspector_data["y pos"]);
+                                        //map_object_instances[selected_map_object_index].pos[2] = std::stof(inspector_data["z pos"]);
+                                        //map_object_instances[selected_map_object_index].rot[0] = std::stof(inspector_data["pitch"]);
+                                        //map_object_instances[selected_map_object_index].rot[1] = std::stof(inspector_data["yaw"]);
+                                        //map_object_instances[selected_map_object_index].rot[2] = std::stof(inspector_data["roll"]);
+                                        //map_object_instances[selected_map_object_index].scale[0] = std::stof(inspector_data["x scale"]);
+                                        //map_object_instances[selected_map_object_index].scale[1] = std::stof(inspector_data["y scale"]);
+                                        //map_object_instances[selected_map_object_index].scale[2] = std::stof(inspector_data["z scale"]);
+                                        //map_object_instances[selected_map_object_index].extra_data = inspector_data["extra data"];
                                 }
 
                         }

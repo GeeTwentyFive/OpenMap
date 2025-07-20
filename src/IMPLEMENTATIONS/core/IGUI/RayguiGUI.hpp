@@ -49,7 +49,7 @@ public:
         inline void DrawInputBoxes(
                 std::array<int, 2> top_left,
                 std::array<int, 2> size,
-                std::map<std::string, std::function<void(std::string)>> fields
+                std::map<std::string, std::string>* fields
         ) override {
                 Rectangle widget_rect = Rectangle{
                         (float)top_left[0],
@@ -59,7 +59,8 @@ public:
                 };
                 GuiPanel(widget_rect, NULL);
                 int i = 0;
-                for (std::pair<std::string, std::function<void(std::string)>> field : fields) {
+                for (std::pair<std::string, std::string> field : *fields) {
+                        // TODO: Labels
                         Rectangle text_box_rect = Rectangle{
                                 widget_rect.x,
                                 widget_rect.y + 40*i,
@@ -67,7 +68,7 @@ public:
                                 20
                         };
                         char buf[1024];
-                        field.first.copy(buf, sizeof(buf));
+                        field.second.copy(buf, sizeof(buf));
                         int edit_mode = 0;
                         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                                 edit_mode = CheckCollisionPointRec(GetMousePosition(), text_box_rect);
@@ -78,7 +79,7 @@ public:
                                 sizeof(buf),
                                 edit_mode
                         );
-                        field.second(buf);
+                        field.second = buf;
                         i++;
                 }
         }
