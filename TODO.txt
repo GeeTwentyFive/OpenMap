@@ -1,4 +1,4 @@
-- IGUI.hpp (<- own BeginDrawing() & EndDrawing(), WITHOUT background clear):
+- IGUI.hpp:
         - If selected obj index isn't -1: Show inspector & show obj's **linked** data inside
 - Add example/ dir with example script & models to repo
 

@@ -29,6 +29,7 @@ private:
         const IInput::Keycode KEY_CAMERA_DOWN = IInput::Keycode::LEFT_CONTROL;
 
         const std::pair<int, int> MENU_BOX_OFFSET_RATIO = {20, 40};
+        const int INSPECTOR_HORIZ_OFFSET = 100;
 
 
         struct MapObject {
@@ -305,6 +306,31 @@ public:
                                                 }
                                         }
                                 );
+
+                                if (selected_map_object_index != -1) {
+                                        _gui->DrawInputBoxes(
+                                                {
+                                                        screen_res.first - INSPECTOR_HORIZ_OFFSET,
+                                                        (screen_res.second / MENU_BOX_OFFSET_RATIO.second) * 4 // TEMP hack; TODO: Refactor
+                                                },
+                                                {
+                                                        INSPECTOR_HORIZ_OFFSET,
+                                                        screen_res.second - ((screen_res.second / MENU_BOX_OFFSET_RATIO.second) * 4) // TEMP hack; TODO: Refactor
+                                                },
+                                                std::map<std::string, std::function<void(std::string)>>{
+                                                        {std::to_string(map_object_instances[selected_map_object_index].pos[0]), [this](std::string s){this->map_object_instances[selected_map_object_index].pos[0] = std::stoi(s);}},
+                                                        {std::to_string(map_object_instances[selected_map_object_index].pos[1]), [this](std::string s){this->map_object_instances[selected_map_object_index].pos[1] = std::stoi(s);}},
+                                                        {std::to_string(map_object_instances[selected_map_object_index].pos[2]), [this](std::string s){this->map_object_instances[selected_map_object_index].pos[2] = std::stoi(s);}},
+                                                        {std::to_string(map_object_instances[selected_map_object_index].rot[0]), [this](std::string s){this->map_object_instances[selected_map_object_index].rot[0] = std::stoi(s);}},
+                                                        {std::to_string(map_object_instances[selected_map_object_index].rot[1]), [this](std::string s){this->map_object_instances[selected_map_object_index].rot[1] = std::stoi(s);}},
+                                                        {std::to_string(map_object_instances[selected_map_object_index].rot[2]), [this](std::string s){this->map_object_instances[selected_map_object_index].rot[2] = std::stoi(s);}},
+                                                        {std::to_string(map_object_instances[selected_map_object_index].scale[0]), [this](std::string s){this->map_object_instances[selected_map_object_index].scale[0] = std::stoi(s);}},
+                                                        {std::to_string(map_object_instances[selected_map_object_index].scale[1]), [this](std::string s){this->map_object_instances[selected_map_object_index].scale[1] = std::stoi(s);}},
+                                                        {std::to_string(map_object_instances[selected_map_object_index].scale[2]), [this](std::string s){this->map_object_instances[selected_map_object_index].scale[2] = std::stoi(s);}},
+                                                }
+                                        );
+                                }
+
                         }
                         _drawer->EndDrawing();
                 }

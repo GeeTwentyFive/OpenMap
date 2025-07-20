@@ -49,9 +49,38 @@ public:
         inline void DrawInputBoxes(
                 std::array<int, 2> top_left,
                 std::array<int, 2> size,
-                std::map<std::string, std::string*> fields
+                std::map<std::string, std::function<void(std::string)>> fields
         ) override {
-                // TODO
+                Rectangle widget_rect = Rectangle{
+                        (float)top_left[0],
+                        (float)top_left[1],
+                        (float)size[0],
+                        (float)size[1]
+                };
+                GuiPanel(widget_rect, NULL);
+                int i = 0;
+                for (std::pair<std::string, std::function<void(std::string)>> field : fields) {
+                        Rectangle text_box_rect = Rectangle{
+                                widget_rect.x,
+                                widget_rect.y + 40*i,
+                                widget_rect.width,
+                                20
+                        };
+                        char buf[1024];
+                        field.first.copy(buf, sizeof(buf));
+                        int edit_mode = 0;
+                        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                                edit_mode = CheckCollisionPointRec(GetMousePosition(), text_box_rect);
+                        }
+                        GuiTextBox(
+                                text_box_rect,
+                                buf,
+                                sizeof(buf),
+                                edit_mode
+                        );
+                        field.second(buf);
+                        i++;
+                }
         }
 
         inline bool ShowConfirmBox(std::string text) override {
