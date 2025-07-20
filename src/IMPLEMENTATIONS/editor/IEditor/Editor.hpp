@@ -46,7 +46,7 @@ private:
 
         std::unordered_map<std::string, MapObject> map_objects;
         std::vector<MapObjectInstance> map_object_instances;
-        MapObjectInstance* selected_map_object_instance = nullptr;
+        int selected_map_object_index = -1; // References index in `map_object_instances`
 
         float camera_move_speed = MIN_CAMERA_MOVE_SPEED;
 
@@ -168,7 +168,7 @@ public:
                         "TEST_FIELD_1: TEST_DATA_1\nTEST_FIELD_2: TEST_DATA_2"
                 );
 
-                Load(QUIT_SAVE_FILE_NAME);
+                //Load(QUIT_SAVE_FILE_NAME);
 
                 // Main loop
                 while (!_drawer->WindowShouldClose()) {
@@ -202,19 +202,24 @@ public:
 
                         if (_input->IsMouseButtonPressed(BTN_SELECT_MAP_OBJECT)) {
                                 IDraw::Ray mouse_ray = _drawer->GetScreenToWorldRay(_input->GetCursorPos());
-                                for (MapObjectInstance map_object : map_object_instances) {
+                                selected_map_object_index = -1;
+                                float closest_distance_to_hit = -1.0f;
+                                for (int i = 0; i < map_object_instances.size(); i++) {
                                         IDraw::RayCollision collision = (
                                                 _drawer->GetRayCollisionBox(
                                                         mouse_ray,
-                                                        _drawer->GetModelBoundingBox(map_object.model)
+                                                        _drawer->GetModelBoundingBox(map_object_instances[i].model)
                                                 )
                                         );
                                         if (collision.hit) {
-                                                selected_map_object_instance = &map_object;
-                                                std::cout << selected_map_object_instance->name << std::endl;
-                                        }
-                                        else {
-                                                selected_map_object_instance = nullptr;
+                                                if (closest_distance_to_hit == -1.0f) { // If first one
+                                                        selected_map_object_index = i;
+                                                        closest_distance_to_hit = collision.distance_to_hit;
+                                                }
+                                                else if (collision.distance_to_hit < closest_distance_to_hit) {
+                                                        selected_map_object_index = i;
+                                                        closest_distance_to_hit = collision.distance_to_hit;
+                                                }
                                         }
                                 }
                         }
@@ -229,9 +234,13 @@ public:
                                                 map_object.rot,
                                                 map_object.scale
                                         );
-                                        if (&map_object == selected_map_object_instance) {
-                                                _drawer->DrawBoundingBox(_drawer->GetModelBoundingBox(map_object.model));
-                                        }
+                                }
+                                if (selected_map_object_index >= 0) {
+                                        _drawer->DrawBoundingBox(
+                                                _drawer->GetModelBoundingBox(
+                                                        map_object_instances[selected_map_object_index].model
+                                                )
+                                        );
                                 }
                         }
                         _drawer->EndDrawing();
