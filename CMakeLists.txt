@@ -30,6 +30,7 @@ if(WIN32)
                 OpenMap
                 ${PROJECT_SOURCE_DIR}/libs/raylib/lib/libraylib_windows.a
                 winmm
+		"-mwindows"
         )
 
 elseif(APPLE)
