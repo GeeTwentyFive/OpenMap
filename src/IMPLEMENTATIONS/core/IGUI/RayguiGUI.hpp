@@ -34,22 +34,16 @@ public:
                 }
         }
 
-        inline Image* LoadImage(std::string path) override {
-                // TODO
-        }
+        //inline Image* LoadImage(std::string path) override {
+        //        return (Image*)&LoadTexture(path.c_str());
+        //}
 
         inline void DrawImageButtonsList(
                 std::array<int, 2> top_left,
                 std::array<int, 2> size,
-                std::vector<ImageButton> buttons
-        ) override {
-                // TODO
-        }
-
-        inline void DrawInputBoxes(
-                std::array<int, 2> top_left,
-                std::array<int, 2> size,
-                std::map<std::string, std::string>* fields
+                std::vector<Button> buttons,
+                //std::vector<ImageButton> buttons
+                std::pair<int, int>& scroll
         ) override {
                 Rectangle widget_rect = Rectangle{
                         (float)top_left[0],
@@ -57,32 +51,76 @@ public:
                         (float)size[0],
                         (float)size[1]
                 };
-                GuiPanel(widget_rect, NULL);
-                int i = 0;
-                for (std::pair<std::string, std::string> field : *fields) {
-                        // TODO: Labels
-                        Rectangle text_box_rect = Rectangle{
-                                widget_rect.x,
-                                widget_rect.y + 40*i,
-                                widget_rect.width,
-                                20
-                        };
-                        char buf[1024];
-                        field.second.copy(buf, sizeof(buf));
-                        int edit_mode = 0;
-                        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                                edit_mode = CheckCollisionPointRec(GetMousePosition(), text_box_rect);
+                Vector2 s = {scroll.first, scroll.second};
+                Rectangle view = {};
+                GuiScrollPanel(
+                        Rectangle{widget_rect},
+                        "",
+                        Rectangle{
+                                .width = 100.0f * buttons.size(),
+                                .height = 100.0f
+                        },
+                        &s,
+                        &view
+                );
+                scroll.first = s.x;
+                scroll.second = s.y;
+                BeginScissorMode(view.x, view.y, view.width, view.height);
+                for (int i = 0; i < buttons.size(); i++) {
+                        if (
+                                GuiButton(
+                                        Rectangle{
+                                                widget_rect.x + scroll.first + 100*i,
+                                                widget_rect.y + 40,
+                                                100,
+                                                40
+                                        },
+                                        buttons[i].label.c_str()
+                                )
+                        ) {
+                                buttons[i].callback(buttons[i].label);
                         }
-                        GuiTextBox(
-                                text_box_rect,
-                                buf,
-                                sizeof(buf),
-                                edit_mode
-                        );
-                        field.second = buf;
-                        i++;
                 }
+                EndScissorMode();
         }
+
+        //inline void DrawInputBoxes(
+        //        std::array<int, 2> top_left,
+        //        std::array<int, 2> size,
+        //        std::map<std::string, std::string>* fields
+        //) override {
+        //        Rectangle widget_rect = Rectangle{
+        //                (float)top_left[0],
+        //                (float)top_left[1],
+        //                (float)size[0],
+        //                (float)size[1]
+        //        };
+        //        GuiPanel(widget_rect, NULL);
+        //        int i = 0;
+        //        for (std::pair<std::string, std::string> field : *fields) {
+        //                // TODO: Labels
+        //                Rectangle text_box_rect = Rectangle{
+        //                        widget_rect.x,
+        //                        widget_rect.y + 40*i,
+        //                        widget_rect.width,
+        //                        20
+        //                };
+        //                char buf[1024];
+        //                field.second.copy(buf, sizeof(buf));
+        //                int edit_mode = 0;
+        //                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        //                        edit_mode = CheckCollisionPointRec(GetMousePosition(), text_box_rect);
+        //                }
+        //                GuiTextBox(
+        //                        text_box_rect,
+        //                        buf,
+        //                        sizeof(buf),
+        //                        edit_mode
+        //                );
+        //                field.second = buf;
+        //                i++;
+        //        }
+        //}
 
         inline bool ShowConfirmBox(std::string text) override {
                 int screen_width = GetScreenWidth();

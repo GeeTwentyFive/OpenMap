@@ -19,6 +19,7 @@ private:
         const char* QUIT_SAVE_FILE_NAME = "QUITSAVE";
 
         const IInput::MouseButton BTN_SELECT_MAP_OBJECT = IInput::MouseButton::MIDDLE;
+        const IInput::Keycode KEY_DELETE_SELECTED_OBJECT = IInput::Keycode::DEL;
 
         const IInput::MouseButton BTN_CAMERA_TOGGLE = IInput::MouseButton::RIGHT;
         const IInput::Keycode KEY_CAMERA_FORWARD = IInput::Keycode::W;
@@ -50,18 +51,18 @@ private:
         std::unordered_map<std::string, MapObject> map_objects;
         std::vector<MapObjectInstance> map_object_instances;
         int selected_map_object_index = -1; // References index in `map_object_instances`
-        std::map<std::string, std::string> inspector_data = {
-                {"x pos", ""},
-                {"y pos", ""},
-                {"z pos", ""},
-                {"pitch", ""},
-                {"yaw", ""},
-                {"roll", ""},
-                {"x scale", ""},
-                {"y scale", ""},
-                {"z scale", ""},
-                {"extra data", ""}
-        };
+        //std::map<std::string, std::string> inspector_data = {
+        //        {"x pos", ""},
+        //        {"y pos", ""},
+        //        {"z pos", ""},
+        //        {"pitch", ""},
+        //        {"yaw", ""},
+        //        {"roll", ""},
+        //        {"x scale", ""},
+        //        {"y scale", ""},
+        //        {"z scale", ""},
+        //        {"extra data", ""}
+        //};
 
         float camera_move_speed = MIN_CAMERA_MOVE_SPEED;
 
@@ -70,6 +71,8 @@ private:
         IGUI* _gui = nullptr;
 
         chaiscript::ChaiScript config_chai;
+
+        std::pair<int, int> top_bar_scroll = {};
 
 
         void InitConfigScript() {
@@ -170,23 +173,8 @@ public:
                         );
                 }
 
-                // TEMP; TEST:
-                std::array<float, 3> camera_pos = _drawer->GetCameraPosition();
-                InstantiateMapObject(
-                        "Viking Room Model",
-                        camera_pos,
-                        {0.0f, 0.0f, 0.0f},
-                        {1.0f, 1.0f, 1.0f}
-                );
-                InstantiateMapObject(
-                        "Viking Room Sprite",
-                        camera_pos,
-                        {0.0f, 0.0f, 0.0f},
-                        {1.0f, 1.0f, 1.0f},
-                        "TEST_FIELD_1: TEST_DATA_1\nTEST_FIELD_2: TEST_DATA_2"
-                );
-
-                //Load(QUIT_SAVE_FILE_NAME);
+                Load(QUIT_SAVE_FILE_NAME);
+                selected_map_object_index = -1;
 
                 // Main loop
                 while (!_drawer->WindowShouldClose()) {
@@ -252,16 +240,23 @@ public:
                                                 &map_object_instances[selected_map_object_index].scale
                                         );
 
-                                        inspector_data["x pos"] = std::to_string(map_object_instances[selected_map_object_index].pos[0]);
-                                        inspector_data["y pos"] = std::to_string(map_object_instances[selected_map_object_index].pos[1]);
-                                        inspector_data["z pos"] = std::to_string(map_object_instances[selected_map_object_index].pos[2]);
-                                        inspector_data["pitch"] = std::to_string(map_object_instances[selected_map_object_index].rot[0]);
-                                        inspector_data["yaw"] = std::to_string(map_object_instances[selected_map_object_index].rot[1]);
-                                        inspector_data["roll"] = std::to_string(map_object_instances[selected_map_object_index].rot[2]);
-                                        inspector_data["x scale"] = std::to_string(map_object_instances[selected_map_object_index].rot[0]);
-                                        inspector_data["y scale"] = std::to_string(map_object_instances[selected_map_object_index].rot[1]);
-                                        inspector_data["z scale"] = std::to_string(map_object_instances[selected_map_object_index].rot[2]);
-                                        inspector_data["extra data"] = map_object_instances[selected_map_object_index].extra_data;
+                                        //inspector_data["x pos"] = std::to_string(map_object_instances[selected_map_object_index].pos[0]);
+                                        //inspector_data["y pos"] = std::to_string(map_object_instances[selected_map_object_index].pos[1]);
+                                        //inspector_data["z pos"] = std::to_string(map_object_instances[selected_map_object_index].pos[2]);
+                                        //inspector_data["pitch"] = std::to_string(map_object_instances[selected_map_object_index].rot[0]);
+                                        //inspector_data["yaw"] = std::to_string(map_object_instances[selected_map_object_index].rot[1]);
+                                        //inspector_data["roll"] = std::to_string(map_object_instances[selected_map_object_index].rot[2]);
+                                        //inspector_data["x scale"] = std::to_string(map_object_instances[selected_map_object_index].rot[0]);
+                                        //inspector_data["y scale"] = std::to_string(map_object_instances[selected_map_object_index].rot[1]);
+                                        //inspector_data["z scale"] = std::to_string(map_object_instances[selected_map_object_index].rot[2]);
+                                        //inspector_data["extra data"] = map_object_instances[selected_map_object_index].extra_data;
+                                }
+                        }
+
+                        if (_input->IsKeyPressed(KEY_DELETE_SELECTED_OBJECT)) {
+                                if (selected_map_object_index >= 0) {
+                                        map_object_instances.erase(map_object_instances.begin() + selected_map_object_index);
+                                        selected_map_object_index = -1;
                                 }
                         }
 
@@ -294,6 +289,7 @@ public:
                                 _drawer->EndMode3D();
 
                                 std::pair<int, int> screen_res = _drawer->GetScreenResolution();
+
                                 _gui->DrawButtonsBox(
                                         {0, 0},
                                         {
@@ -330,35 +326,62 @@ public:
                                         }
                                 );
 
-                                if (selected_map_object_index != -1) {
-                                        _gui->DrawInputBoxes(
-                                                {
-                                                        screen_res.first - INSPECTOR_HORIZ_OFFSET,
-                                                        (screen_res.second / MENU_BOX_OFFSET_RATIO.second) * 4 // TEMP hack; TODO: Refactor
-                                                },
-                                                {
-                                                        INSPECTOR_HORIZ_OFFSET,
-                                                        screen_res.second - ((screen_res.second / MENU_BOX_OFFSET_RATIO.second) * 4) // TEMP hack; TODO: Refactor
-                                                },
-                                                &inspector_data
+                                std::vector<IGUI::Button> top_bar_buttons;
+                                for (std::pair<std::string, MapObject> map_object : map_objects) {
+                                        top_bar_buttons.push_back(
+                                                IGUI::Button{
+                                                        .label = map_object.first,
+                                                        .callback = [this](std::string label) {
+                                                                this->InstantiateMapObject(
+                                                                        label,
+                                                                        _drawer->GetCameraPosition(),
+                                                                        {0.0f, 0.0f, 0.0f},
+                                                                        {1.0f, 1.0f, 1.0f}
+                                                                );
+                                                        }
+                                                }
                                         );
-                                        //map_object_instances[selected_map_object_index].pos[0] = std::stof(inspector_data["x pos"]);
-                                        //map_object_instances[selected_map_object_index].pos[1] = std::stof(inspector_data["y pos"]);
-                                        //map_object_instances[selected_map_object_index].pos[2] = std::stof(inspector_data["z pos"]);
-                                        //map_object_instances[selected_map_object_index].rot[0] = std::stof(inspector_data["pitch"]);
-                                        //map_object_instances[selected_map_object_index].rot[1] = std::stof(inspector_data["yaw"]);
-                                        //map_object_instances[selected_map_object_index].rot[2] = std::stof(inspector_data["roll"]);
-                                        //map_object_instances[selected_map_object_index].scale[0] = std::stof(inspector_data["x scale"]);
-                                        //map_object_instances[selected_map_object_index].scale[1] = std::stof(inspector_data["y scale"]);
-                                        //map_object_instances[selected_map_object_index].scale[2] = std::stof(inspector_data["z scale"]);
-                                        //map_object_instances[selected_map_object_index].extra_data = inspector_data["extra data"];
                                 }
+                                _gui->DrawImageButtonsList(
+                                        {
+                                                screen_res.first / MENU_BOX_OFFSET_RATIO.first,
+                                                0
+                                        },
+                                        {
+                                                screen_res.first - (screen_res.first / MENU_BOX_OFFSET_RATIO.first),
+                                                (screen_res.second / MENU_BOX_OFFSET_RATIO.second) * 4
+                                        },
+                                        top_bar_buttons,
+                                        top_bar_scroll
+                                );
+
+                                //if (selected_map_object_index != -1) {
+                                //        _gui->DrawInputBoxes(
+                                //                {
+                                //                        screen_res.first - INSPECTOR_HORIZ_OFFSET,
+                                //                        (screen_res.second / MENU_BOX_OFFSET_RATIO.second) * 4 // TEMP hack; TODO: Refactor
+                                //                },
+                                //                {
+                                //                        INSPECTOR_HORIZ_OFFSET,
+                                //                        screen_res.second - ((screen_res.second / MENU_BOX_OFFSET_RATIO.second) * 4) // TEMP hack; TODO: Refactor
+                                //                },
+                                //                &inspector_data
+                                //        );
+                                //        //map_object_instances[selected_map_object_index].pos[0] = std::stof(inspector_data["x pos"]);
+                                //        //map_object_instances[selected_map_object_index].pos[1] = std::stof(inspector_data["y pos"]);
+                                //        //map_object_instances[selected_map_object_index].pos[2] = std::stof(inspector_data["z pos"]);
+                                //        //map_object_instances[selected_map_object_index].rot[0] = std::stof(inspector_data["pitch"]);
+                                //        //map_object_instances[selected_map_object_index].rot[1] = std::stof(inspector_data["yaw"]);
+                                //        //map_object_instances[selected_map_object_index].rot[2] = std::stof(inspector_data["roll"]);
+                                //        //map_object_instances[selected_map_object_index].scale[0] = std::stof(inspector_data["x scale"]);
+                                //        //map_object_instances[selected_map_object_index].scale[1] = std::stof(inspector_data["y scale"]);
+                                //        //map_object_instances[selected_map_object_index].scale[2] = std::stof(inspector_data["z scale"]);
+                                //        //map_object_instances[selected_map_object_index].extra_data = inspector_data["extra data"];
+                                //}
 
                         }
                         _drawer->EndDrawing();
                 }
-
-                Export("MAP.CUSTOM_FORMAT"); // TEMP; TEST
 
                 Save(QUIT_SAVE_FILE_NAME);
 
@@ -405,7 +428,7 @@ public:
 
                 MapObjectInstance map_object_instance{
                         .name = name,
-                        .model = map_objects[name].model,
+                        .model = map_objects[name].model
                 };
 
                 if (extra_data.empty()) {
@@ -418,7 +441,12 @@ public:
                 map_object_instance.scale = scale;
 
                 map_object_instances.push_back(map_object_instance);
-
+                selected_map_object_index = map_object_instances.size()-1;
+                _drawer->HookGizmoTo(
+                        &map_object_instances[selected_map_object_index].pos,
+                        &map_object_instances[selected_map_object_index].rot,
+                        &map_object_instances[selected_map_object_index].scale
+                );
         }
 
         inline void Save(std::string path) override {

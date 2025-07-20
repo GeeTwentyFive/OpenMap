@@ -29,19 +29,21 @@ public:
                 std::vector<Button> buttons
         ) = 0;
 
-        virtual Image* LoadImage(std::string path) = 0;
+        //virtual Image* LoadImage(std::string path) = 0;
 
         virtual void DrawImageButtonsList(
                 std::array<int, 2> top_left,
                 std::array<int, 2> size,
-                std::vector<ImageButton> buttons
+                std::vector<Button> buttons,
+                //std::vector<ImageButton> buttons
+                std::pair<int, int>& scroll
         ) = 0;
 
-        virtual void DrawInputBoxes(
-                std::array<int, 2> top_left,
-                std::array<int, 2> size,
-                std::map<std::string, std::string>* fields
-        ) = 0;
+        //virtual void DrawInputBoxes(
+        //        std::array<int, 2> top_left,
+        //        std::array<int, 2> size,
+        //        std::map<std::string, std::string>* fields
+        //) = 0;
 
         virtual bool ShowConfirmBox(std::string text) = 0;
 

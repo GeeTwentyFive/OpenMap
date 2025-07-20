@@ -1,9 +1,9 @@
-- IGUI.hpp:
-        - If selected obj index isn't -1: Show inspector & show obj's **linked** data inside
-- Add example/ dir with example script & models to repo
+Actually, just rewrite the whole thing but better
 
 After Minimum Viable Product / first release:
+- Inspector
 - Refactor Editor's ChaiScript implementation into INTERFACES/core/IScript + ChaiScript implementation
 - Refactor Editor's JSON implementation into INTERFACES/core/ISerializer + JSON implementation
 - Rename IDraw and RaylibDrawer into IRenderer and RaylibRenderer
 - Get window initialization & management *out* of ^ IDraw/IRenderer and into INTERFACES/core/IWindower
+- ...refactor all those things labeled with TODO/temporary hacky fix...
