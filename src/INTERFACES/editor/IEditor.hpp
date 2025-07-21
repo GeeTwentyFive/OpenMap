@@ -9,14 +9,9 @@
 class IEditor {
 
 public:
-        struct MapObject{
-                std::string name;
-                IRenderer::Model* model;
-                std::string default_extra_data = {};
-        };
-
         struct MapObjectInstance{
                 std::string name;
+                const IRenderer::Model* model;
                 std::array<float, 3> pos;
                 std::array<float, 3> rot;
                 std::array<float, 3> scale;
