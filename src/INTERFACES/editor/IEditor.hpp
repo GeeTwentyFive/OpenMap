@@ -21,6 +21,7 @@ public:
                 std::array<float, 3> rot;
                 std::array<float, 3> scale;
                 std::string extra_data = {};
+                bool selected = false;
         };
 
 

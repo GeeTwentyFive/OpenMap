@@ -1,3 +1,242 @@
-- IRenderer.hpp
 - Provide config path as optional parameter in IEditor implementation's constructor
 - IGUI implementation: MainMenu, MapObjectsPicker, MapObjectInspector, ConfirmDialog, FilePickerDialog
+- *Don't* show inspector if multiple MapObjects selected
+
+- Build Linux static lib for Assimp
+- Build Linux static lib for GLFW
+- Study & note ImGuizmo
+
+
+
+For GLFW+GLAD:
+```
+#include <libs/glad/glad.h>
+#include <libs/GLFW/glfw3.h>
+
+int main(void)
+{
+    GLFWwindow* window;
+
+    /* Initialize the library */
+    if (!glfwInit())
+        return -1;
+
+    /* Create a windowed mode window and its OpenGL context */
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    if (!window)
+    {
+        glfwTerminate();
+        return -1;
+    }
+
+    /* Make the window's context current */
+    glfwMakeContextCurrent(window);
+
+    if (glfwRawMouseMotionSupported())
+        glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+
+    /* Loop until the user closes the window */
+    while (!glfwWindowShouldClose(window))
+    {
+        /* Render here */
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        /* Swap front and back buffers */
+        glfwSwapBuffers(window);
+
+        /* Poll for and process events */
+        glfwPollEvents();
+    }
+
+    glfwTerminate();
+    return 0;
+}
+```
+
+^ error handling:
+```
+glfwSetErrorCallback(error_callback);
+
+void error_callback(int code, const char* description)
+{
+    display_error_message(code, description);
+}
+```
+
+^ framebuffer size callback:
+```
+glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+```
+
+^ key input:
+```
+glfwSetKeyCallback(window, key_callback);
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_E && action == GLFW_PRESS)
+        activate_airship();
+}
+```
+
+^ text input:
+```
+glfwSetCharCallback(window, character_callback);
+
+void character_callback(GLFWwindow* window, unsigned int codepoint)
+{
+}
+```
+
+^ cursor pos (raw mouse motion if GLFW_CURSOR_DISABLED):
+```
+glfwSetCursorPosCallback(window, cursor_position_callback);
+
+static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+}
+```
+
+^ lock cursor: `glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);`
+^ unlock cursor: `glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);`
+
+^ mouse button input:
+```
+glfwSetMouseButtonCallback(window, mouse_button_callback);
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+        popup_menu();
+}
+```
+
+^ scroll input:
+```
+glfwSetScrollCallback(window, scroll_callback);
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+}
+```
+
+^ time: `double seconds = glfwGetTime();`
+
+
+
+For Dear ImGui: https://github.com/ocornut/imgui/blob/master/examples/example_glfw_opengl3/main.cpp
+
+^ interactive manual: https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html
+
+^ asset browser: https://github.com/ocornut/imgui/blob/master/imgui_demo.cpp#L10421
+
+^ in case of blur: https://github.com/ocornut/imgui/blob/master/docs/FAQ.md#q-how-should-i-handle-dpi-in-my-application
+
+
+
+For ImGuiFileDialog:
+```
+void drawGui() { 
+  // open Dialog Simple
+  if (ImGui::Button("Open File Dialog")) {
+    IGFD::FileDialogConfig config;
+    config.path = ".";
+    ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".cpp,.h,.hpp", config);
+  }
+  // display
+  if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {
+    if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
+      std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+      std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+      // action
+    }
+    
+    // close
+    ImGuiFileDialog::Instance()->Close();
+  }
+}
+```
+
+
+
+glm example:
+```
+#include <glm/vec3.hpp> // glm::vec3
+#include <glm/vec4.hpp> // glm::vec4
+#include <glm/mat4x4.hpp> // glm::mat4
+#include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
+#include <glm/ext/matrix_clip_space.hpp> // glm::perspective
+#include <glm/ext/scalar_constants.hpp> // glm::pi
+
+glm::mat4 camera(float Translate, glm::vec2 const& Rotate)
+{
+	glm::mat4 Projection = glm::perspective(glm::pi<float>() * 0.25f, 4.0f / 3.0f, 0.1f, 100.f);
+	glm::mat4 View = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Translate));
+	View = glm::rotate(View, Rotate.y, glm::vec3(-1.0f, 0.0f, 0.0f));
+	View = glm::rotate(View, Rotate.x, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 Model = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
+	return Projection * View * Model;
+}
+```
+^ +: https://github.com/g-truc/glm/blob/master/manual.md#-8-code-samples
+^ OR: just include "glm/glm.hpp" and "glm/ext.hpp" for everything
+
+
+For Assimp:
+```
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>     // Post processing flags
+
+  Assimp::Importer importer;
+
+  // And have it read the given file with some example postprocessing
+  // Usually - if speed is not the most important aspect for you - you'll
+  // probably to request more postprocessing than we do in this example.
+  const aiScene* scene = importer.ReadFile( pFile,
+    aiProcess_CalcTangentSpace       |
+    aiProcess_Triangulate            |
+    aiProcess_JoinIdenticalVertices  |
+    aiProcess_SortByPType);
+
+  // If the import failed, report it
+  if (nullptr == scene) {
+    DoTheErrorLogging( importer.GetErrorString());
+    return false;
+  }
+```
+
+
+For stb_image.h:
+```
+#define STB_IMAGE_IMPLEMENTATION
+#include <libs/stb/stb_image.h>
+// Basic usage:
+//    int x,y,n;
+//    unsigned char *data = stbi_load(filename, &x, &y, &n, 0);
+//    // ... process data if not NULL ...
+//    // ... x = width, y = height, n = # 8-bit components per pixel ...
+//    // ... replace '0' with '1'..'4' to force that many components per pixel
+//    // ... but 'n' will always be the number that it would have been if you said 0
+//    stbi_image_free(data);
+```
+
+
+For image -> plane:
+```
+GLuint textureID;
+glGenTextures(1, &textureID);
+glBindTexture(GL_TEXTURE_2D, textureID);
+glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img.cols, img.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, img.data);
+glGenerateMipmap(GL_TEXTURE_2D);
+```

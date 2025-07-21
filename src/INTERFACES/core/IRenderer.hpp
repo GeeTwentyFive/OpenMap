@@ -2,23 +2,23 @@
 #define _OPENMAP_IRENDERER_HPP
 
 #include <string>
-#include <array>
+#include <vector>
+#include <src/INTERFACES/editor/IEditor.hpp>
+#include <src/INTERFACES/core/IWindower.hpp>
 
 
-class IRenderer { // TODO
+class IRenderer {
 
 public:
         struct Model; // opaque pointer
 
 
+        // Loads 3D models *and* images as sprites (textures mapped onto planes)
         virtual Model* Load(const std::string path) = 0;
 
-        virtual void Draw(
-                const Model* model,
-                const std::array<float, 3>& position,
-                const std::array<float, 3>& rotation,
-                const std::array<float, 3>& scale,
-                const std::array<unsigned char, 4>& color_tint = {0xff, 0xff, 0xff, 0xff}
+        virtual void Render(
+                const std::vector<IEditor::MapObjectInstance>& map_object_instances,
+                const IWindower::InputState& input_state
         ) = 0;
 
         virtual ~IRenderer() = default;
