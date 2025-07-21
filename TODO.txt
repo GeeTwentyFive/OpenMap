@@ -1,9 +1,3 @@
-Actually, just rewrite the whole thing but better
-
-After Minimum Viable Product / first release:
-- Inspector
-- Refactor Editor's ChaiScript implementation into INTERFACES/core/IScript + ChaiScript implementation
-- Refactor Editor's JSON implementation into INTERFACES/core/ISerializer + JSON implementation
-- Rename IDraw and RaylibDrawer into IRenderer and RaylibRenderer
-- Get window initialization & management *out* of ^ IDraw/IRenderer and into INTERFACES/core/IWindower
-- ...refactor all those things labeled with TODO/temporary hacky fix...
+- IRenderer.hpp
+- Provide config path as optional parameter in IEditor implementation's constructor
+- IGUI implementation: MainMenu, MapObjectsPicker, MapObjectInspector, ConfirmDialog, FilePickerDialog

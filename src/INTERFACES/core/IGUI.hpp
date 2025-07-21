@@ -1,53 +1,30 @@
 #ifndef _OPENMAP_IGUI_HPP
 #define _OPENMAP_IGUI_HPP
 
-#include <array>
-#include <string>
-#include <functional>
+#include <utility>
 #include <vector>
-#include <map>
+#include <src/INTERFACES/core/IRenderer.hpp>
+#include <src/INTERFACES/core/IWindower.hpp>
+#include <src/INTERFACES/editor/IEditor.hpp>
+
 
 class IGUI {
 
 public:
-        struct Button {
-                std::string label;
-                std::function<void(std::string)> callback;
+        enum class ButtonPressed {
+                NONE,
+                SAVE,
+                LOAD,
+                EXPORT,
+                CLEAR,
+                MAP_OBJECT
         };
-
-        typedef struct Image;
-        struct ImageButton{
-                Image* image;
-                std::string label;
-                std::function<void(std::string)> callback;
-        };
-
-
-        virtual void DrawButtonsBox(
-                std::array<int, 2> top_left,
-                std::array<int, 2> size,
-                std::vector<Button> buttons
+        virtual ButtonPressed Update(
+                const std::pair<int, int>& window_resolution,
+                const IWindower::InputState& input_state,
+                const std::vector< std::pair<std::string, IRenderer::Model*> >& map_objects,
+                const std::vector<IEditor::MapObjectInstance>& map_object_instances
         ) = 0;
-
-        //virtual Image* LoadImage(std::string path) = 0;
-
-        virtual void DrawImageButtonsList(
-                std::array<int, 2> top_left,
-                std::array<int, 2> size,
-                std::vector<Button> buttons,
-                //std::vector<ImageButton> buttons
-                std::pair<int, int>& scroll
-        ) = 0;
-
-        //virtual void DrawInputBoxes(
-        //        std::array<int, 2> top_left,
-        //        std::array<int, 2> size,
-        //        std::map<std::string, std::string>* fields
-        //) = 0;
-
-        virtual bool ShowConfirmBox(std::string text) = 0;
-
-        virtual std::string ShowTextInputBox(std::string prompt) = 0;
 
         virtual ~IGUI() = default;
 
