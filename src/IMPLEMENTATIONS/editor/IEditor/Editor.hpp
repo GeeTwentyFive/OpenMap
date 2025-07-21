@@ -27,9 +27,9 @@ private:
         IGUI* _gui;
         ISerializer* _serializer;
 
-        std::unordered_map<std::string, MapObjectRegistration> map_objects; // string is name
-        std::vector<IEditor::MapObjectInstance> map_object_instances;
-        std::vector<IEditor::MapObjectInstance*> selected_map_objects;
+        std::vector<MapObject> registered_map_objects;
+        std::vector<MapObjectInstance> map_object_instances;
+        std::vector<MapObjectInstance*> selected_map_objects;
 
 
         void LoadConfig(const std::string& config_path) {
@@ -94,19 +94,25 @@ public:
                 const std::string& default_extra_data = {}
         ) override {
                 std::string map_object_file_name = std::filesystem::path(path).stem().string();
-                if (map_objects.count(map_object_file_name) != 0) {
-                        throw std::runtime_error(
-                                std::string("ERROR: A MapObject ") +
-                                '"' + map_object_file_name + '"' +
-                                " is already registered!" +
-                                "\n\t^ attempted re-registration path: " +
-                                '"' + path + '"'
-                        );
+                for (MapObject map_object_registration : registered_map_objects) {
+                                if (map_object_registration.name.compare(map_object_file_name) == 0) {
+                                        throw std::runtime_error(
+                                                std::string("ERROR: A MapObject ") +
+                                                '"' + map_object_file_name + '"' +
+                                                " is already registered!" +
+                                                "\n\t^ attempted re-registration path: " +
+                                                '"' + path + '"'
+                                );
+                        }
                 }
-                map_objects[map_object_file_name] = MapObjectRegistration{
-                        .model = _renderer->Load(path),
-                        .default_extra_data = default_extra_data
-                };
+
+                registered_map_objects.push_back(
+                        MapObject{
+                                .name = map_object_file_name,
+                                .model = _renderer->Load(path),
+                                .default_extra_data = default_extra_data
+                        }
+                );
         }
 
         inline void Run() override {
@@ -124,23 +130,21 @@ public:
                 const std::array<float, 3>& scale,
                 const std::string& extra_data = {}
         ) override {
-                if (map_objects.count(name) == 0) {
-                        throw std::runtime_error(
-                                std::string("ERROR (AddMapObject): MapObject ") +
-                                '"' + name + '"' +
-                                " not found!"
-                        );
+                MapObject* map_object_registration = nullptr;
+                for (int i = 0; i < registered_map_objects.size(); i++) {
+                        if (registered_map_objects[i].name.compare(name) == 0) {
+                                map_object_registration = &registered_map_objects[i];
+                        }
                 }
 
                 MapObjectInstance map_object_instance{
-                        .name = name,
-                        .model = map_objects[name].model,
+                        .base_data = map_object_registration,
                         .pos = pos,
                         .rot = rot,
                         .scale = scale
                 };
                 if (!extra_data.empty()) map_object_instance.extra_data = extra_data;
-                else map_object_instance.extra_data = map_objects[name].default_extra_data;
+                else map_object_instance.extra_data = map_object_registration->default_extra_data;
 
                 map_object_instances.push_back(map_object_instance);
                 selected_map_objects.clear();

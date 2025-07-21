@@ -16,7 +16,7 @@ public:
         virtual void Update(
                 const std::pair<int, int>& window_resolution,
                 const IWindower::InputState& input_state,
-                const std::vector< std::pair<std::string, IRenderer::Model*> >& map_objects,
+                const std::vector<IEditor::MapObject>& registered_map_objects,
                 const std::vector<IEditor::MapObjectInstance>& map_object_instances,
                 const std::vector<IEditor::MapObjectInstance*>& selected_map_objects,
 
