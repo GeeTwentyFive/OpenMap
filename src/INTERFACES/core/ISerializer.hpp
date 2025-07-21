@@ -7,9 +7,9 @@
 class ISerializer {
 
 public:
-	virtual std::vector<unsigned char> Serialize(const IEditor::MapObjectInstance& m) = 0;
+	virtual std::string Serialize(const std::vector<IEditor::MapObjectInstance>& map_object_instances) = 0;
 
-	virtual IEditor::MapObjectInstance DeserializeMapObject(const std::vector<unsigned char>& data) = 0;
+	virtual std::vector<IEditor::MapObjectInstance> DeserializeMapObjects(const std::string& data) = 0;
 
 };
 
