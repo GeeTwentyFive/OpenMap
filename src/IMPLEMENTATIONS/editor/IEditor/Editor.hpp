@@ -19,10 +19,7 @@
 class Editor : public IEditor {
 
 private:
-        struct MapObject{
-                IRenderer::Model* model;
-                std::string default_extra_data = {};
-        };
+        const char* QUIT_SAVE_FILE_NAME = "QUITSAVE";
 
 
         IWindower* _windower;
@@ -30,8 +27,50 @@ private:
         IGUI* _gui;
         ISerializer* _serializer;
 
-        std::unordered_map<std::string, MapObject> map_objects; // string is name
+        std::unordered_map<std::string, MapObjectRegistration> map_objects; // string is name
         std::vector<IEditor::MapObjectInstance> map_object_instances;
+        std::vector<IEditor::MapObjectInstance*> selected_map_objects;
+
+
+        void LoadConfig(const std::string& config_path) {
+                try {
+                        std::ifstream in_data(config_path);
+                        std::string _whitespace, path, default_extra_data;
+                        while (true) {
+                                if (!std::getline(in_data, _whitespace, '"')) {
+                                        break; // EOF
+                                }
+
+                                if (!std::getline(in_data, path, '"')) {
+                                        throw std::runtime_error(
+                                                std::string("ERROR: Failed to find ending quote for \"path\" at index ") + std::to_string(in_data.tellg())
+                                        );
+                                }
+
+                                if (!std::getline(in_data, _whitespace, '"')) {
+                                        throw std::runtime_error(
+                                                std::string("ERROR: Failed to find starting quote for \"default_extra_data\" at index ") + std::to_string(in_data.tellg())
+                                        );
+                                }
+
+                                if (!std::getline(in_data, default_extra_data, '"')) {
+                                        throw std::runtime_error(
+                                                std::string("ERROR: Failed to find ending quote for \"default_extra_data\" at index ") + std::to_string(in_data.tellg())
+                                        );
+                                }
+
+                                RegisterMapObject(path, default_extra_data);
+
+                        }
+                }
+                catch (const std::exception& e) {
+                        throw std::runtime_error(
+                                std::string("ERROR: Failed to load config file from path: ") +
+                                '"' + config_path + '"' +
+                                "\n\t^ exception: " + e.what()
+                        );
+                }
+        }
 
 
 public:
@@ -47,7 +86,7 @@ public:
                 _gui = gui;
                 _serializer = serializer;
 
-                // TODO
+                LoadConfig(config_path);
         }
 
         inline void RegisterMapObject(
@@ -64,17 +103,21 @@ public:
                                 '"' + path + '"'
                         );
                 }
-                map_objects[map_object_file_name] = MapObject{
+                map_objects[map_object_file_name] = MapObjectRegistration{
                         .model = _renderer->Load(path),
                         .default_extra_data = default_extra_data
                 };
         }
 
         inline void Run() override {
+                Load(QUIT_SAVE_FILE_NAME);
+
                 // TODO
+
+                Save(QUIT_SAVE_FILE_NAME);
         }
 
-        inline void AddMapObject(
+        inline void InstantiateMapObject(
                 const std::string& name, // <= filename in `path` in `RegisterMapObject()` (without extension)
                 const std::array<float, 3>& pos,
                 const std::array<float, 3>& rot,
@@ -100,6 +143,8 @@ public:
                 else map_object_instance.extra_data = map_objects[name].default_extra_data;
 
                 map_object_instances.push_back(map_object_instance);
+                selected_map_objects.clear();
+                selected_map_objects.push_back(&map_object_instance);
         }
 
         inline void Save(const std::string& path) override {
@@ -123,6 +168,7 @@ public:
                         std::string serialized_data(serialized_data_size, '\0');
                         in_file.seekg(0);
                         in_file.read(&serialized_data[0], serialized_data_size);
+
                         map_object_instances = _serializer->DeserializeMapObjects(serialized_data);
                 }
                 catch (const std::exception& e) {
@@ -133,7 +179,7 @@ public:
         }
 
         inline void Clear() override {
-                // TODO
+                map_object_instances.clear();
         }
 
 };

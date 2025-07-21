@@ -1,6 +1,10 @@
+#include <src/IMPLEMENTATIONS/editor/IEditor/Editor.hpp>
+
 #include <stdio.h>
 #include <stdexcept>
 #include <iostream>
+// TODO
+
 
 #define LOG_FILE_NAME "OpenMap.log"
 #define CONFIG_FILE_NAME "config"

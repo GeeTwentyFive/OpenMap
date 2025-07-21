@@ -4,11 +4,17 @@
 #include <string>
 #include <array>
 #include <src/INTERFACES/core/IRenderer.hpp>
+#include <src/INTERFACES/core/IWindower.hpp>
 
 
 class IEditor {
 
 public:
+        struct MapObjectRegistration{
+                IRenderer::Model* model;
+                std::string default_extra_data = {};
+        };
+
         struct MapObjectInstance{
                 std::string name;
                 const IRenderer::Model* model;
@@ -16,7 +22,6 @@ public:
                 std::array<float, 3> rot;
                 std::array<float, 3> scale;
                 std::string extra_data = {};
-                bool selected = false;
         };
 
 
@@ -25,9 +30,11 @@ public:
                 const std::string& default_extra_data = {}
         ) = 0;
 
-        virtual void Run() = 0;
+        virtual void Run(
+                //
+        ) = 0;
         
-        virtual void AddMapObject(
+        virtual void InstantiateMapObject(
                 const std::string& name, // <= filename in `path` in `RegisterMapObject()` (without extension)
                 const std::array<float, 3>& pos,
                 const std::array<float, 3>& rot,

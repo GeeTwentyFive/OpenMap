@@ -1,4 +1,3 @@
-- Provide config path as optional parameter in IEditor implementation's constructor
 - IGUI implementation: MainMenu, MapObjectsPicker, MapObjectInspector, ConfirmDialog, FilePickerDialog
 - *Don't* show inspector if multiple MapObjects selected
 

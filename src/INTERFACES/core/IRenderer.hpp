@@ -18,6 +18,7 @@ public:
 
         virtual void Render(
                 const std::vector<IEditor::MapObjectInstance>& map_object_instances,
+                const std::vector<IEditor::MapObjectInstance*>& selected_map_objects,
                 const IWindower::InputState& input_state
         ) = 0;
 
