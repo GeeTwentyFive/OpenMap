@@ -11,7 +11,7 @@
 #include <filesystem>
 #include <stdexcept>
 #include <deque>
-#include <ranges>
+#include <algorithm>
 #include <src/INTERFACES/core/IWindower.hpp>
 #include <src/INTERFACES/core/IRenderer.hpp>
 #include <src/INTERFACES/core/IGUI.hpp>
@@ -358,7 +358,10 @@ public:
 
         void Clear() {
                 std::vector<size_t> all_map_object_instances_indices(map_object_instances.size());
-                std::iota(all_map_object_instances_indices.begin(), all_map_object_instances_indices.end(), 0);
+                for (size_t i = 0; i < map_object_instances.size(); i++) {
+                        all_map_object_instances_indices.push_back(i);
+                }
+                
                 ExecuteCommand(
                         std::make_unique<DeleteCommand>(
                                 map_object_instances,
