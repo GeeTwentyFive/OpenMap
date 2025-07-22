@@ -41,7 +41,6 @@ public:
 
         virtual void Save(const std::string& path) = 0;
         virtual void Load(const std::string& path) = 0;
-        virtual void Clear() = 0;
 
         virtual ~IEditor() = default;
 

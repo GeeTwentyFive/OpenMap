@@ -10,6 +10,8 @@
 #include <iostream>
 #include <filesystem>
 #include <stdexcept>
+#include <deque>
+#include <ranges>
 #include <src/INTERFACES/core/IWindower.hpp>
 #include <src/INTERFACES/core/IRenderer.hpp>
 #include <src/INTERFACES/core/IGUI.hpp>
@@ -38,7 +40,24 @@ private:
         const Keycode KEY_CAMERA_UP = Keycode::SPACE;
         const Keycode KEY_CAMERA_DOWN = Keycode::LEFT_CONTROL;
 
+        const int MAX_UNDO = 256;
+
         const char* QUIT_SAVE_FILE_NAME = "QUITSAVE";
+
+
+        class ICommand {
+
+        public:
+                virtual void _Execute() = 0;
+                virtual void _Undo() = 0;
+                // ^ Never call these directly, use instead:
+                //      - ExecuteCommand()
+                //      - Undo()
+                //      - Redo()
+
+                virtual ~ICommand() = default;
+
+        };
 
 
         IWindower* _windower;
@@ -48,7 +67,92 @@ private:
 
         std::vector<MapObjectRegistration> registered_map_objects;
         std::vector<MapObjectInstance> map_object_instances;
-        std::vector<MapObjectInstance*> selected_map_objects;
+        std::vector<size_t> selected_map_objects_indices;
+        std::vector<MapObjectInstance> map_object_instances_copy_buffer; // For Copy-Paste
+
+        std::deque<std::unique_ptr<ICommand>> command_undo_stack;
+        std::deque<std::unique_ptr<ICommand>> command_redo_stack;
+
+
+        class PasteCommand : public ICommand {
+
+        private:
+                std::vector<MapObjectInstance>& _map_object_instances;
+                std::vector<MapObjectInstance> _paste_data;
+                size_t pasted_count = 0;
+
+
+        public:
+                PasteCommand(
+                        std::vector<MapObjectInstance>& map_object_instances,
+                        std::vector<MapObjectInstance> paste_data
+                ) :
+                        _map_object_instances(map_object_instances),
+                        _paste_data(paste_data)
+                {}
+
+                void _Execute() override {
+                        _map_object_instances.insert(
+                                _map_object_instances.end(),
+                                _paste_data.begin(),
+                                _paste_data.end()
+                        );
+                        pasted_count = _paste_data.size();
+                }
+
+                void _Undo() override {
+                        _map_object_instances.erase(
+                                _map_object_instances.end() - pasted_count,
+                                _map_object_instances.end()
+                        );
+                }
+
+        };
+
+        class DeleteCommand : public ICommand {
+
+        private:
+                std::vector<MapObjectInstance>& _map_object_instances;
+                std::vector<size_t> _target_map_object_instances_indices;
+                std::vector<MapObjectInstance> _deleted_map_object_instances;
+
+
+        public:
+                DeleteCommand(
+                        std::vector<MapObjectInstance>& map_object_instances,
+                        std::vector<size_t> target_map_object_instances_indices
+                ) :
+                        _map_object_instances(map_object_instances),
+                        _target_map_object_instances_indices(target_map_object_instances_indices)
+                {}
+
+                void _Execute() override {
+                        std::sort(
+                                _target_map_object_instances_indices.rbegin(),
+                                _target_map_object_instances_indices.rend()
+                        );
+
+                        _deleted_map_object_instances.clear();
+                        for (size_t index : _target_map_object_instances_indices) {
+                                _deleted_map_object_instances.push_back(_map_object_instances[index]);
+                                _map_object_instances.erase(_map_object_instances.begin() + index);
+                        }
+                }
+
+                void _Undo() override {
+                        for (
+                                size_t i = 0;
+                                i < _target_map_object_instances_indices.size();
+                                i++
+                        ) {
+                                _map_object_instances.insert(
+                                        _map_object_instances.begin() + _target_map_object_instances_indices[i],
+                                        _deleted_map_object_instances[_target_map_object_instances_indices.size()-1 - i]
+                                );
+                        }
+                }
+
+        };
 
 
         void LoadConfig(const std::string& config_path) {
@@ -89,6 +193,16 @@ private:
                                 "\n\t^ exception: " + e.what()
                         );
                 }
+        }
+
+        void ExecuteCommand(std::unique_ptr<ICommand> command) {
+                command->_Execute();
+
+                command_undo_stack.push_back(std::move(command));
+                if (command_undo_stack.size() >= MAX_UNDO)
+                        command_undo_stack.pop_front();
+                
+                command_redo_stack.clear();
         }
 
 
@@ -168,8 +282,8 @@ public:
                 else map_object_instance.extra_data = map_object_registration->default_extra_data;
 
                 map_object_instances.push_back(map_object_instance);
-                selected_map_objects.clear();
-                selected_map_objects.push_back(&map_object_instance);
+                selected_map_objects_indices.clear();
+                selected_map_objects_indices.push_back(map_object_instances.size() - 1);
         }
 
         inline void Save(const std::string& path) override {
@@ -203,8 +317,54 @@ public:
                 }
         }
 
-        inline void Clear() override {
-                map_object_instances.clear();
+        void Undo() {
+                if (!command_undo_stack.empty()) {
+                        std::unique_ptr<ICommand> command = std::move(command_undo_stack.back());
+                        command_undo_stack.pop_back();
+                        command->_Undo();
+                        command_redo_stack.push_back(std::move(command));
+                }
+        }
+
+        void Redo() {
+                if (!command_redo_stack.empty()) {
+                        std::unique_ptr<ICommand> command = std::move(command_redo_stack.back());
+                        command_redo_stack.pop_back();
+                        command->_Execute();
+
+                        command_undo_stack.push_back(std::move(command));
+                        if (command_undo_stack.size() >= MAX_UNDO)
+                                command_undo_stack.pop_front();
+                }
+        }
+        
+        void Paste() {
+                ExecuteCommand(
+                        std::make_unique<PasteCommand>(
+                                map_object_instances,
+                                map_object_instances_copy_buffer
+                        )
+                );
+        }
+
+        void Delete(std::vector<MapObjectInstance>& map_object_instances) {
+                ExecuteCommand(
+                        std::make_unique<DeleteCommand>(
+                                map_object_instances,
+                                selected_map_objects_indices
+                        )
+                );
+        }
+
+        void Clear() {
+                std::vector<size_t> all_map_object_instances_indices(map_object_instances.size());
+                std::iota(all_map_object_instances_indices.begin(), all_map_object_instances_indices.end(), 0);
+                ExecuteCommand(
+                        std::make_unique<DeleteCommand>(
+                                map_object_instances,
+                                all_map_object_instances_indices
+                        )
+                );
         }
 
 };

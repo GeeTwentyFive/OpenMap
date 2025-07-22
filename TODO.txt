@@ -1,4 +1,5 @@
-- Command pattern for undo/redo
+- Command pattern for undo/redo:
+        - DESELECT ALL ON UNDO/REDO
 - Windower
 - Renderer
 - GUI:
