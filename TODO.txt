@@ -193,6 +193,7 @@ glm::mat4 camera(float Translate, glm::vec2 const& Rotate)
 ^ OR: just include "glm/glm.hpp" and "glm/ext.hpp" for everything
 
 
+
 For Assimp:
 ```
 #include <assimp/Importer.hpp>      // C++ importer interface
@@ -215,29 +216,4 @@ For Assimp:
     DoTheErrorLogging( importer.GetErrorString());
     return false;
   }
-```
-
-
-For stb_image.h:
-```
-#define STB_IMAGE_IMPLEMENTATION
-#include <libs/stb/stb_image.h>
-// Basic usage:
-//    int x,y,n;
-//    unsigned char *data = stbi_load(filename, &x, &y, &n, 0);
-//    // ... process data if not NULL ...
-//    // ... x = width, y = height, n = # 8-bit components per pixel ...
-//    // ... replace '0' with '1'..'4' to force that many components per pixel
-//    // ... but 'n' will always be the number that it would have been if you said 0
-//    stbi_image_free(data);
-```
-
-
-For image -> plane:
-```
-GLuint textureID;
-glGenTextures(1, &textureID);
-glBindTexture(GL_TEXTURE_2D, textureID);
-glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img.cols, img.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, img.data);
-glGenerateMipmap(GL_TEXTURE_2D);
 ```
