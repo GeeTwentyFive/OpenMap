@@ -1,8 +1,8 @@
+- Fix IRenderer::Render() -> OpenGLRenderer::Render() override bug
+- Command pattern for undo/redo
 - IGUI implementation: MainMenu, MapObjectsPicker, MapObjectInspector, ConfirmDialog, FilePickerDialog
 - *Don't* show inspector if multiple MapObjects selected
 
-- Build Linux static lib for Assimp
-- Build Linux static lib for GLFW
 - Study & note ImGuizmo
 
 
@@ -24,6 +24,7 @@ int main(void)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
     {
@@ -34,10 +35,10 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+
     if (glfwRawMouseMotionSupported())
         glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))

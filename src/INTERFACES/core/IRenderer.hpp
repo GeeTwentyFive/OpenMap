@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <src/INTERFACES/editor/IEditor.hpp>
-#include <src/INTERFACES/core/IWindower.hpp>
 
 
 class IRenderer {
@@ -14,12 +13,13 @@ public:
 
 
         // Loads 3D models *and* images as sprites (textures mapped onto planes)
-        virtual Model* Load(const std::string path) = 0;
+        virtual Model* Load(const std::string& path) = 0;
+
+        // TODO: UpdateCamera(...?)
 
         virtual void Render(
                 const std::vector<IEditor::MapObjectInstance>& map_object_instances,
-                const std::vector<IEditor::MapObjectInstance*>& selected_map_objects,
-                const IWindower::InputState& input_state
+                const std::vector<IEditor::MapObjectInstance*>& selected_map_objects
         ) = 0;
 
         virtual ~IRenderer() = default;

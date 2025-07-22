@@ -19,6 +19,25 @@
 class Editor : public IEditor {
 
 private:
+        const float MOUSE_SENSITIVITY = 0.1f;
+        const float MIN_CAMERA_MOVE_SPEED = 0.1f;
+
+        const IWindower::MouseButton BTN_SELECT_MAP_OBJECT = IWindower::MouseButton::LEFT;
+        const IWindower::Keycode KEY_MODIFIER = IWindower::Keycode::LEFT_SHIFT;
+        const IWindower::Keycode KEY_DELETE_SELECTED_OBJECTS = IWindower::Keycode::DEL;
+        const IWindower::Keycode KEY_COPY_SELECTED_OBJECTS = IWindower::Keycode::C;
+        const IWindower::Keycode KEY_PASTE_COPIED_OBJECTS = IWindower::Keycode::V;
+        const IWindower::Keycode KEY_UNDO = IWindower::Keycode::Z;
+        const IWindower::Keycode KEY_REDO = IWindower::Keycode::R;
+
+        const IWindower::MouseButton BTN_CAMERA_TOGGLE = IWindower::MouseButton::RIGHT;
+        const IWindower::Keycode KEY_CAMERA_FORWARD = IWindower::Keycode::W;
+        const IWindower::Keycode KEY_CAMERA_BACK = IWindower::Keycode::S;
+        const IWindower::Keycode KEY_CAMERA_RIGHT = IWindower::Keycode::A;
+        const IWindower::Keycode KEY_CAMERA_LEFT = IWindower::Keycode::D;
+        const IWindower::Keycode KEY_CAMERA_UP = IWindower::Keycode::SPACE;
+        const IWindower::Keycode KEY_CAMERA_DOWN = IWindower::Keycode::LEFT_CONTROL;
+
         const char* QUIT_SAVE_FILE_NAME = "QUITSAVE";
 
 
@@ -86,7 +105,8 @@ public:
                 _gui = gui;
                 _serializer = serializer;
 
-                LoadConfig(config_path);
+                if (!config_path.empty())
+                        LoadConfig(config_path);
         }
 
         inline void RegisterMapObject(
@@ -119,6 +139,7 @@ public:
                 Load(QUIT_SAVE_FILE_NAME);
 
                 // TODO
+                std::cout << "TEST" << std::endl; // TEMP; TEST
 
                 Save(QUIT_SAVE_FILE_NAME);
         }

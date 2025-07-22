@@ -5,9 +5,9 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <src/INTERFACES/editor/IEditor.hpp>
 #include <src/INTERFACES/core/IRenderer.hpp>
 #include <src/INTERFACES/core/IWindower.hpp>
-#include <src/INTERFACES/editor/IEditor.hpp>
 
 
 class IGUI {
