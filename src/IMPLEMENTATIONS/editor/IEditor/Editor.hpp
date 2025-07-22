@@ -318,6 +318,7 @@ public:
         }
 
         void Undo() {
+                selected_map_objects_indices.clear();
                 if (!command_undo_stack.empty()) {
                         std::unique_ptr<ICommand> command = std::move(command_undo_stack.back());
                         command_undo_stack.pop_back();
@@ -327,6 +328,7 @@ public:
         }
 
         void Redo() {
+                selected_map_objects_indices.clear();
                 if (!command_redo_stack.empty()) {
                         std::unique_ptr<ICommand> command = std::move(command_redo_stack.back());
                         command_redo_stack.pop_back();
