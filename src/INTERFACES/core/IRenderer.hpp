@@ -3,23 +3,23 @@
 
 #include <string>
 #include <vector>
+struct MapObjectInstance;
 #include <src/INTERFACES/editor/IEditor.hpp>
+
+
+struct Model; // opaque pointer
 
 
 class IRenderer {
 
 public:
-        struct Model; // opaque pointer
-
-
-        // Loads 3D models *and* images as sprites (textures mapped onto planes)
         virtual Model* Load(const std::string& path) = 0;
 
         // TODO: UpdateCamera(...?)
 
         virtual void Render(
-                const std::vector<IEditor::MapObjectInstance>& map_object_instances,
-                const std::vector<IEditor::MapObjectInstance*>& selected_map_objects
+                const std::vector<MapObjectInstance>& map_object_instances,
+                const std::vector<MapObjectInstance*>& selected_map_objects
         ) = 0;
 
         virtual ~IRenderer() = default;

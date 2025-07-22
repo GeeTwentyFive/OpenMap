@@ -22,21 +22,21 @@ private:
         const float MOUSE_SENSITIVITY = 0.1f;
         const float MIN_CAMERA_MOVE_SPEED = 0.1f;
 
-        const IWindower::MouseButton BTN_SELECT_MAP_OBJECT = IWindower::MouseButton::LEFT;
-        const IWindower::Keycode KEY_MODIFIER = IWindower::Keycode::LEFT_SHIFT;
-        const IWindower::Keycode KEY_DELETE_SELECTED_OBJECTS = IWindower::Keycode::DEL;
-        const IWindower::Keycode KEY_COPY_SELECTED_OBJECTS = IWindower::Keycode::C;
-        const IWindower::Keycode KEY_PASTE_COPIED_OBJECTS = IWindower::Keycode::V;
-        const IWindower::Keycode KEY_UNDO = IWindower::Keycode::Z;
-        const IWindower::Keycode KEY_REDO = IWindower::Keycode::R;
+        const MouseButton BTN_SELECT_MAP_OBJECT = MouseButton::LEFT;
+        const Keycode KEY_MODIFIER = Keycode::LEFT_SHIFT;
+        const Keycode KEY_DELETE_SELECTED_OBJECTS = Keycode::DEL;
+        const Keycode KEY_COPY_SELECTED_OBJECTS = Keycode::C;
+        const Keycode KEY_PASTE_COPIED_OBJECTS = Keycode::V;
+        const Keycode KEY_UNDO = Keycode::Z;
+        const Keycode KEY_REDO = Keycode::R;
 
-        const IWindower::MouseButton BTN_CAMERA_TOGGLE = IWindower::MouseButton::RIGHT;
-        const IWindower::Keycode KEY_CAMERA_FORWARD = IWindower::Keycode::W;
-        const IWindower::Keycode KEY_CAMERA_BACK = IWindower::Keycode::S;
-        const IWindower::Keycode KEY_CAMERA_RIGHT = IWindower::Keycode::A;
-        const IWindower::Keycode KEY_CAMERA_LEFT = IWindower::Keycode::D;
-        const IWindower::Keycode KEY_CAMERA_UP = IWindower::Keycode::SPACE;
-        const IWindower::Keycode KEY_CAMERA_DOWN = IWindower::Keycode::LEFT_CONTROL;
+        const MouseButton BTN_CAMERA_TOGGLE = MouseButton::RIGHT;
+        const Keycode KEY_CAMERA_FORWARD = Keycode::W;
+        const Keycode KEY_CAMERA_BACK = Keycode::S;
+        const Keycode KEY_CAMERA_RIGHT = Keycode::A;
+        const Keycode KEY_CAMERA_LEFT = Keycode::D;
+        const Keycode KEY_CAMERA_UP = Keycode::SPACE;
+        const Keycode KEY_CAMERA_DOWN = Keycode::LEFT_CONTROL;
 
         const char* QUIT_SAVE_FILE_NAME = "QUITSAVE";
 
@@ -46,7 +46,7 @@ private:
         IGUI* _gui;
         ISerializer* _serializer;
 
-        std::vector<MapObject> registered_map_objects;
+        std::vector<MapObjectRegistration> registered_map_objects;
         std::vector<MapObjectInstance> map_object_instances;
         std::vector<MapObjectInstance*> selected_map_objects;
 
@@ -114,7 +114,7 @@ public:
                 const std::string& default_extra_data = {}
         ) override {
                 std::string map_object_file_name = std::filesystem::path(path).stem().string();
-                for (MapObject map_object_registration : registered_map_objects) {
+                for (MapObjectRegistration map_object_registration : registered_map_objects) {
                                 if (map_object_registration.name.compare(map_object_file_name) == 0) {
                                         throw std::runtime_error(
                                                 std::string("ERROR: A MapObject ") +
@@ -127,7 +127,7 @@ public:
                 }
 
                 registered_map_objects.push_back(
-                        MapObject{
+                        MapObjectRegistration{
                                 .name = map_object_file_name,
                                 .model = _renderer->Load(path),
                                 .default_extra_data = default_extra_data
@@ -151,7 +151,7 @@ public:
                 const std::array<float, 3>& scale,
                 const std::string& extra_data = {}
         ) override {
-                MapObject* map_object_registration = nullptr;
+                MapObjectRegistration* map_object_registration = nullptr;
                 for (int i = 0; i < registered_map_objects.size(); i++) {
                         if (registered_map_objects[i].name.compare(name) == 0) {
                                 map_object_registration = &registered_map_objects[i];
@@ -159,7 +159,7 @@ public:
                 }
 
                 MapObjectInstance map_object_instance{
-                        .base_data = map_object_registration,
+                        .name = map_object_registration->name,
                         .pos = pos,
                         .rot = rot,
                         .scale = scale
@@ -181,7 +181,7 @@ public:
                 catch (const std::exception& e) {
                         std::cout << "ERROR: Failed to save map to path: " <<
                         '"' << path << '"' <<
-                        "\n\t^ exception: " << e.what();
+                        "\n\t^ exception: " << e.what() << std::endl;
                 }
         }
 
@@ -199,7 +199,7 @@ public:
                 catch (const std::exception& e) {
                         std::cout << "ERROR: Failed to load map from path: " <<
                         '"' << path << '"' <<
-                        "\n\t^ exception: " << e.what();
+                        "\n\t^ exception: " << e.what() << std::endl;
                 }
         }
 

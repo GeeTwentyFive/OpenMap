@@ -24,8 +24,8 @@ public:
         }
 
         inline void Render(
-                const std::vector<IEditor::MapObjectInstance>& map_object_instances,
-                const std::vector<IEditor::MapObjectInstance*>& selected_map_objects
+                const std::vector<MapObjectInstance>& map_object_instances,
+                const std::vector<MapObjectInstance*>& selected_map_objects
         ) override {
                 // TODO
         }

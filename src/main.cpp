@@ -20,10 +20,10 @@ int main() {
 
         try {
                 Editor(
-                        GLFWWindower(),
-                        OpenGLRenderer(),
-                        DearImGuiGUI(),
-                        JSONSerializer()
+                        new GLFWWindower(),
+                        new OpenGLRenderer(),
+                        new DearImGuiGUI(),
+                        new JSONSerializer()
                 ).Run();
         } catch(const std::exception& e) {
                 std::cout << e.what() << std::endl;

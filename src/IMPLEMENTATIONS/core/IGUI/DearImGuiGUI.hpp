@@ -13,10 +13,10 @@ public:
 
         inline void Update(
                 const std::pair<int, int>& window_resolution,
-                const IWindower::InputState& input_state,
-                const std::vector<IEditor::MapObject>& registered_map_objects,
-                const std::vector<IEditor::MapObjectInstance>& map_object_instances,
-                const std::vector<IEditor::MapObjectInstance*>& selected_map_objects,
+                const InputState& input_state,
+                const std::vector<MapObjectRegistration>& registered_map_objects,
+                const std::vector<MapObjectInstance>& map_object_instances,
+                const std::vector<MapObjectInstance*>& selected_map_objects,
 
                 const std::function<void(std::string)>& save_callback,
                 const std::function<void(std::string)>& load_callback,

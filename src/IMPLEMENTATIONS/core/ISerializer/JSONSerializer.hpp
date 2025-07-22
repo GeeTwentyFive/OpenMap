@@ -8,9 +8,9 @@
 
 class JSONSerializer : public ISerializer {
 
-        inline std::string Serialize(const std::vector<IEditor::MapObjectInstance>& map_object_instances) override {
+        inline std::string Serialize(const std::vector<MapObjectInstance>& map_object_instances) override {
                 nlohmann::json j_array = nlohmann::json::array();
-                for (IEditor::MapObjectInstance map_object : map_object_instances) {
+                for (MapObjectInstance map_object : map_object_instances) {
                         nlohmann::json j;
                         j["name"] = map_object.name;
                         j["pos"] = map_object.pos;
@@ -24,13 +24,13 @@ class JSONSerializer : public ISerializer {
                 return j_array.dump(4);
         }
 
-        inline std::vector<IEditor::MapObjectInstance> DeserializeMapObjects(const std::string& data) override {
+        inline std::vector<MapObjectInstance> DeserializeMapObjects(const std::string& data) override {
                 nlohmann::json j = nlohmann::json::parse(data);
 
-                std::vector<IEditor::MapObjectInstance> map_object_instances;
+                std::vector<MapObjectInstance> map_object_instances;
                 for (const auto& item : j) {
                         map_object_instances.push_back(
-                                IEditor::MapObjectInstance{
+                                MapObjectInstance{
                                         .name = item.at("name").get<std::string>(),
                                         .pos = item.at("pos").get<std::array<float, 3>>(),
                                         .rot = item.at("rot").get<std::array<float, 3>>(),

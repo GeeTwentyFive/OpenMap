@@ -1,7 +1,9 @@
-- Fix IRenderer::Render() -> OpenGLRenderer::Render() override bug
 - Command pattern for undo/redo
-- IGUI implementation: MainMenu, MapObjectsPicker, MapObjectInspector, ConfirmDialog, FilePickerDialog
-- *Don't* show inspector if multiple MapObjects selected
+- Windower
+- Renderer
+- GUI:
+        - MainMenu, MapObjectsPicker, MapObjectInspector, ConfirmDialog, FilePickerDialog
+        - *Don't* show inspector if multiple MapObjects selected
 
 - Study & note ImGuizmo
 
