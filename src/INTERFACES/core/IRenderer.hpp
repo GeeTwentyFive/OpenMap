@@ -19,7 +19,7 @@ public:
 
         virtual void Render(
                 const std::vector<MapObjectInstance>& map_object_instances,
-                const std::vector<MapObjectInstance*>& selected_map_objects
+                const std::vector<size_t>& selected_map_objects_indices
         ) = 0;
 
         virtual ~IRenderer() = default;

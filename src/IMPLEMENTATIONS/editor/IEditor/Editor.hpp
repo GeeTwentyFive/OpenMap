@@ -252,8 +252,13 @@ public:
         inline void Run() override {
                 Load(QUIT_SAVE_FILE_NAME);
 
-                // TODO
+                // TEMP; TEST:
                 std::cout << "TEST" << std::endl; // TEMP; TEST
+                InputState temp;
+                while (!_windower->WindowShouldClose()) {
+                        _windower->SwapBuffers();
+                        _windower->UpdateInputState(temp);
+                }
 
                 Save(QUIT_SAVE_FILE_NAME);
         }

@@ -140,7 +140,11 @@ class IWindower {
 public:
         virtual bool WindowShouldClose() = 0;
 
+        virtual void SwapBuffers() = 0;
+
         virtual void UpdateInputState(InputState& input_state) = 0;
+
+        virtual double GetTime() = 0;
 
         virtual ~IWindower() = default;
 

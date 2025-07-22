@@ -10,8 +10,8 @@ class OpenGLRenderer : public IRenderer {
 
 private:
         // TODO:
-        // - Draw(map_objects)
-        // - DrawBoundingBoxes(selected_map_objects)
+        // - Draw map objects
+        // - Draw bounding boxes around selected map objects
 
 
 public:
@@ -25,7 +25,7 @@ public:
 
         inline void Render(
                 const std::vector<MapObjectInstance>& map_object_instances,
-                const std::vector<MapObjectInstance*>& selected_map_objects
+                const std::vector<size_t>& selected_map_objects_indices
         ) override {
                 // TODO
         }

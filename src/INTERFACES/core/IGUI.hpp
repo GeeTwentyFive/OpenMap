@@ -18,7 +18,7 @@ public:
                 const InputState& input_state,
                 const std::vector<MapObjectRegistration>& registered_map_objects,
                 const std::vector<MapObjectInstance>& map_object_instances,
-                const std::vector<MapObjectInstance*>& selected_map_objects,
+                std::vector<size_t>& selected_map_objects_indices,
 
                 const std::function<void(std::string)>& save_callback,
                 const std::function<void(std::string)>& load_callback,
