@@ -1,4 +1,3 @@
-- Windower
 - Renderer:
         - UpdateCamera
 - GUI:
@@ -9,101 +8,9 @@
 
 
 
-For GLFW+GLAD:
-```
-#include <libs/glad/glad.h>
-#include <libs/GLFW/glfw3.h>
+For Renderer: Clear: glClear(GL_COLOR_BUFFER_BIT);
 
-int main(void)
-{
-    GLFWwindow* window;
-
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
-
-    /* Create a windowed mode window and its OpenGL context */
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_SAMPLES, 4);
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }
-
-    /* Make the window's context current */
-    glfwMakeContextCurrent(window);
-
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
-
-    if (glfwRawMouseMotionSupported())
-        glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
-
-        /* Poll for and process events */
-        glfwPollEvents();
-    }
-
-    glfwTerminate();
-    return 0;
-}
-```
-
-^ key input:
-```
-glfwSetKeyCallback(window, key_callback);
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    if (key == GLFW_KEY_E && action == GLFW_PRESS)
-        activate_airship();
-}
-```
-
-^ text input:
-```
-glfwSetCharCallback(window, character_callback);
-
-void character_callback(GLFWwindow* window, unsigned int codepoint)
-{
-}
-```
-
-^ cursor pos (raw mouse motion if GLFW_CURSOR_DISABLED):
-```
-glfwSetCursorPosCallback(window, cursor_position_callback);
-
-static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-{
-}
-```
-
-^ lock cursor: `glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);`
-^ unlock cursor: `glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);`
-
-^ mouse button input:
-```
-glfwSetMouseButtonCallback(window, mouse_button_callback);
-
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-{
-    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
-        popup_menu();
-}
-```
-
-^ scroll input:
+GLFW scroll input:
 ```
 glfwSetScrollCallback(window, scroll_callback);
 
@@ -111,8 +18,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 }
 ```
-
-^ time: `double seconds = glfwGetTime();`
 
 
 

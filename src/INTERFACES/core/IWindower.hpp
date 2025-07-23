@@ -6,6 +6,7 @@
 
 
 enum class Keycode {
+        UNKNOWN = -1,
         APOSTROPHE,
         COMMA,
         MINUS,
@@ -115,6 +116,7 @@ enum class Keycode {
 };
 
 enum class MouseButton {
+        UNKNOWN = -1,
         LEFT,
         RIGHT,
         MIDDLE
@@ -125,9 +127,8 @@ struct InputState {
         std::unordered_map<Keycode, bool> keys_pressed;
         std::unordered_map<Keycode, bool> keys_released;
 
-        bool cursor_locked;
         std::pair<int, int> cursor_position;
-        std::pair<double, double> mouse_delta;
+        std::pair<int, int> last_cursor_position;
         std::pair<double, double> mouse_wheel_delta;
         std::unordered_map<MouseButton, bool> mouse_buttons_down;
         std::unordered_map<MouseButton, bool> mouse_buttons_pressed;
@@ -142,9 +143,19 @@ public:
 
         virtual void SwapBuffers() = 0;
 
+        virtual double GetTime() = 0;
+
         virtual void UpdateInputState(InputState& input_state) = 0;
 
-        virtual double GetTime() = 0;
+        virtual void LockCursor() = 0;
+        virtual void UnlockCursor() = 0;
+
+        virtual int GetMonitorRefreshRate() = 0;
+
+        virtual void SleepUntilFPS(
+                double target_fps,
+                double frame_start_time
+        ) = 0;
 
         virtual ~IWindower() = default;
 

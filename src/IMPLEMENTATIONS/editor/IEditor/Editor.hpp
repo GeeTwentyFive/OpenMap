@@ -73,6 +73,8 @@ private:
         std::deque<std::unique_ptr<ICommand>> command_undo_stack;
         std::deque<std::unique_ptr<ICommand>> command_redo_stack;
 
+        InputState input_state = {};
+
 
         class PasteCommand : public ICommand {
 
@@ -252,12 +254,21 @@ public:
         inline void Run() override {
                 Load(QUIT_SAVE_FILE_NAME);
 
-                // TEMP; TEST:
-                std::cout << "TEST" << std::endl; // TEMP; TEST
-                InputState temp;
+                // Main loop
+                double frame_start_time;
                 while (!_windower->WindowShouldClose()) {
+                        frame_start_time = _windower->GetTime();
+
+                        _windower->UpdateInputState(input_state);
+
+                        // TODO
+
                         _windower->SwapBuffers();
-                        _windower->UpdateInputState(temp);
+
+                        _windower->SleepUntilFPS(
+                                _windower->GetMonitorRefreshRate() * 2,
+                                frame_start_time
+                        );
                 }
 
                 Save(QUIT_SAVE_FILE_NAME);
