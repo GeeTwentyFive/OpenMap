@@ -1,5 +1,5 @@
 - Renderer:
-        - Load() <- Assimp
+        - Load()
         - UpdateCamera()
         - Render()
 - Principal Component Analysis OBB's (Open3D?)
