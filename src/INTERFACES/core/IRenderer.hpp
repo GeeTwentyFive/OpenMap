@@ -17,6 +17,8 @@ public:
 
         // TODO: UpdateCamera(...?)
 
+        virtual void Clear() = 0;
+
         virtual void Render(
                 const std::vector<MapObjectInstance>& map_object_instances,
                 const std::vector<size_t>& selected_map_objects_indices

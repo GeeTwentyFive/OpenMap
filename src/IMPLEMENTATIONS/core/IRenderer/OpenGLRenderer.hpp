@@ -15,12 +15,12 @@ private:
 
 
 public:
-        OpenGLRenderer() {
+        inline Model* Load(const std::string& path) override {
                 // TODO
         }
 
-        inline Model* Load(const std::string& path) override {
-                // TODO
+        inline void Clear() override {
+                glClear(GL_COLOR_BUFFER_BIT);
         }
 
         inline void Render(

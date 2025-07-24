@@ -1,9 +1,11 @@
 - Renderer:
-        - UpdateCamera
+        - Load() <- Assimp
+        - UpdateCamera()
+        - Render()
+- Principal Component Analysis OBB's (Open3D?)
 - GUI:
         - MainMenu, MapObjectsPicker, MapObjectInspector, ConfirmDialog, FilePickerDialog
         - *Don't* show inspector if multiple MapObjects selected
-
 - Study & note ImGuizmo
 
 

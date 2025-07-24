@@ -160,9 +160,11 @@ private:
         void LoadConfig(const std::string& config_path) {
                 try {
                         std::ifstream in_data(config_path);
-                        std::string _whitespace, path, default_extra_data;
+                        if (!in_data) throw std::runtime_error("Config file not found");
+
+                        std::string _skip, path, default_extra_data;
                         while (true) {
-                                if (!std::getline(in_data, _whitespace, '"')) {
+                                if (!std::getline(in_data, _skip, '"')) {
                                         break; // EOF
                                 }
 
@@ -172,7 +174,7 @@ private:
                                         );
                                 }
 
-                                if (!std::getline(in_data, _whitespace, '"')) {
+                                if (!std::getline(in_data, _skip, '"')) {
                                         throw std::runtime_error(
                                                 std::string("ERROR: Failed to find starting quote for \"default_extra_data\" at index ") + std::to_string(in_data.tellg())
                                         );
@@ -261,7 +263,9 @@ public:
 
                         _windower->UpdateInputState(input_state);
 
+
                         // TODO
+
 
                         _windower->SwapBuffers();
 

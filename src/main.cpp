@@ -23,7 +23,8 @@ int main() {
                         new GLFWWindower(),
                         new OpenGLRenderer(),
                         new DearImGuiGUI(),
-                        new JSONSerializer()
+                        new JSONSerializer(),
+                        CONFIG_FILE_NAME
                 ).Run();
         } catch(const std::exception& e) {
                 std::cout << e.what() << std::endl;
