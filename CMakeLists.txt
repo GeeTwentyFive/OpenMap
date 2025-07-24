@@ -12,7 +12,6 @@ add_executable(
 target_include_directories(
         OpenMap
         PUBLIC .
-        PUBLIC ./libs/tinygltf
         PUBLIC ./libs/glad
         PUBLIC ./libs/glm
         PUBLIC ./libs/imgui
