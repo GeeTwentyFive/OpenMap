@@ -3,6 +3,7 @@
 
 #include <src/INTERFACES/core/IRenderer.hpp>
 
+#include <libs/tinygltf/tiny_gltf.h>
 #include <src/INTERFACES/editor/IEditor.hpp>
 
 
