@@ -15,9 +15,12 @@ class IRenderer {
 public:
         virtual Model* Load(const std::string& path) = 0;
 
-        // TODO: UpdateCamera(...?)
+        virtual void UpdateCamera(
+                std::array<float, 3> movement,
+                std::array<float, 2> rotation
+        ) = 0;
 
-        virtual void Clear() = 0;
+        virtual void ClearFramebuffer() = 0;
 
         virtual void Render(
                 const std::vector<MapObjectInstance>& map_object_instances,

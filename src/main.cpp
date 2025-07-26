@@ -1,12 +1,12 @@
-#include <src/IMPLEMENTATIONS/editor/IEditor/Editor.hpp>
+#include <src/IMPLEMENTATIONS/editor/Editor.hpp>
 
 #include <stdio.h>
 #include <stdexcept>
 #include <iostream>
-#include <src/IMPLEMENTATIONS/core/IWindower/GLFWWindower.hpp>
-#include <src/IMPLEMENTATIONS/core/IRenderer/OpenGLRenderer.hpp>
-#include <src/IMPLEMENTATIONS/core/IGUI/DearImGuiGUI.hpp>
-#include <src/IMPLEMENTATIONS/core/ISerializer/JSONSerializer.hpp>
+#include <src/IMPLEMENTATIONS/core/Windower.hpp>
+#include <src/IMPLEMENTATIONS/core/Renderer.hpp>
+#include <src/IMPLEMENTATIONS/core/GUI.hpp>
+#include <src/IMPLEMENTATIONS/core/Serializer.hpp>
 
 
 #define LOG_FILE_NAME "OpenMap.log"
@@ -20,10 +20,10 @@ int main() {
 
         try {
                 Editor(
-                        new GLFWWindower(),
-                        new OpenGLRenderer(),
-                        new DearImGuiGUI(),
-                        new JSONSerializer(),
+                        new Windower(),
+                        new Renderer(),
+                        new GUI(),
+                        new Serializer(),
                         CONFIG_FILE_NAME
                 ).Run();
         } catch(const std::exception& e) {

@@ -7,13 +7,14 @@
 
 
 struct MapObjectRegistration{
-        std::string name;
+        std::string path;
         Model* model;
         std::string default_extra_data = {};
 };
 
 struct MapObjectInstance{
-        std::string name;
+        std::string path;
+        Model* model;
         std::array<float, 3> pos;
         std::array<float, 3> rot;
         std::array<float, 3> scale;
@@ -32,7 +33,7 @@ public:
         virtual void Run() = 0;
         
         virtual void InstantiateMapObject(
-                const std::string& name, // <= filename in `path` in `RegisterMapObject()` (without extension)
+                const std::string& path,
                 const std::array<float, 3>& pos,
                 const std::array<float, 3>& rot,
                 const std::array<float, 3>& scale,

@@ -5,8 +5,9 @@
 #include <unordered_map>
 
 
-enum class Keycode {
+enum class OpenMap_Keycode {
         UNKNOWN = -1,
+
         APOSTROPHE,
         COMMA,
         MINUS,
@@ -113,9 +114,11 @@ enum class Keycode {
         KP_ADD,
         KP_ENTER,
         KP_EQUAL,
+
+        LAST
 };
 
-enum class MouseButton {
+enum class OpenMap_MouseButton {
         UNKNOWN = -1,
         LEFT,
         RIGHT,
@@ -123,16 +126,16 @@ enum class MouseButton {
 };
 
 struct InputState {
-        std::unordered_map<Keycode, bool> keys_down;
-        std::unordered_map<Keycode, bool> keys_pressed;
-        std::unordered_map<Keycode, bool> keys_released;
+        std::unordered_map<OpenMap_Keycode, bool> keys_down;
+        std::unordered_map<OpenMap_Keycode, bool> keys_pressed;
+        std::unordered_map<OpenMap_Keycode, bool> keys_released;
 
         std::pair<int, int> cursor_position;
         std::pair<int, int> last_cursor_position;
         std::pair<double, double> mouse_wheel_delta;
-        std::unordered_map<MouseButton, bool> mouse_buttons_down;
-        std::unordered_map<MouseButton, bool> mouse_buttons_pressed;
-        std::unordered_map<MouseButton, bool> mouse_buttons_released;
+        std::unordered_map<OpenMap_MouseButton, bool> mouse_buttons_down;
+        std::unordered_map<OpenMap_MouseButton, bool> mouse_buttons_pressed;
+        std::unordered_map<OpenMap_MouseButton, bool> mouse_buttons_released;
 };
 
 
