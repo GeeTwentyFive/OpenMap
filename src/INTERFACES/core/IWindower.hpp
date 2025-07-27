@@ -148,7 +148,17 @@ public:
 
         virtual double GetTime() = 0;
 
-        virtual void UpdateInputState(InputState& input_state) = 0;
+        virtual bool IsKeyPressed(OpenMap_Keycode keycode) = 0; // Pressed once
+        virtual bool IsKeyDown(OpenMap_Keycode keycode) = 0; // Actively pressed
+
+        virtual bool IsMouseButtonPressed(OpenMap_MouseButton mouse_button) = 0; // Pressed once
+        virtual bool IsMouseButtonDown(OpenMap_MouseButton mouse_button) = 0; // Actively pressed
+
+        virtual std::tuple<int, int> GetCursorPos() = 0;
+        
+        virtual std::tuple<int, int> GetMouseDelta() = 0;
+
+        virtual std::tuple<int, int> GetMouseWheelDelta() = 0;
 
         virtual void LockCursor() = 0;
         virtual void UnlockCursor() = 0;

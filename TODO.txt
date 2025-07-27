@@ -1,5 +1,4 @@
-- Windower: UpdateInputState()
-- Renderer: Render(): Highlight selected
+- Renderer: Render(): Highlight selected (TAKE FROM 0.0.1a)
 - GUI:
         - MainMenu, MapObjectsPicker, MapObjectInspector, ConfirmDialog, FilePickerDialog
         - *Don't* show inspector if multiple MapObjects selected

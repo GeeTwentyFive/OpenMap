@@ -258,11 +258,16 @@ public:
                 while (!_windower->WindowShouldClose()) {
                         frame_start_time = _windower->GetTime();
 
-                        _windower->UpdateInputState(input_state);
-
+                        // TEMP; TEST:
+                        InstantiateMapObject(
+                                registered_map_objects[0].path,
+                                {0, 0, -10},
+                                {0, 0, 0},
+                                {1, 1, 1}
+                        );
+                        _renderer->Render(map_object_instances, selected_map_objects_indices);
 
                         // TODO
-
 
                         _windower->SwapBuffers();
 

@@ -4,7 +4,10 @@
 #include <src/INTERFACES/core/IRenderer.hpp>
 
 #include <stdexcept>
-#include <libs/raylib-cpp/include/raylib-cpp.hpp>
+#include <libs/raylib/include/raylib.h>
+#define RAYMATH_STATIC_INLINE
+#include <libs/raylib/include/raymath.h>
+#include <libs/raylib/include/rlgl.h>
 
 class Renderer : public IRenderer {
 
@@ -14,7 +17,7 @@ private:
         const float CAMERA_FOV = 90.0f;
 
 
-        raylib::Camera3D camera;
+        Camera camera;
 
 
         void DrawModel(
@@ -50,7 +53,7 @@ private:
                                 scale[1],
                                 scale[2]
                         },
-                        raylib::Color{0xFFFFFFFF}
+                        Color{0xFF, 0xFF, 0xFF, 0xFF}
                 );
         }
 
@@ -58,22 +61,18 @@ private:
 public:
         Renderer() {
 
-                camera = raylib::Camera3D(
-                        raylib::Vector3{0.0f, 0.0f, 0.0f},
-                        raylib::Vector3{0.0f, 0.0f, -1.0f},
-                        raylib::Vector3{0.0f, 1.0f, 0.0f},
-                        CAMERA_FOV,
-                        CAMERA_PERSPECTIVE
-                );
+                camera.position = Vector3{0.0f, 0.0f, 0.0f};
+                camera.target = Vector3{0.0f, 0.0f, 1.0f};
+                camera.up = Vector3{0.0f, 1.0f, 0.0f};
+                camera.fovy = CAMERA_FOV;
+                camera.projection = CAMERA_PERSPECTIVE;
 
                 rlSetClipPlanes(CAMERA_NEAR, CAMERA_FAR);
-
-                rlDisableBackfaceCulling();
 
         }
 
         inline Model* Load(const std::string& path) override {
-                raylib::Model* model = new raylib::Model;
+                ::Model* model = new ::Model;
                 *model = ::LoadModel(path.c_str());
                 if (model->meshCount == 0) throw std::runtime_error(
                         std::string("ERROR: Failed to load model: ") + path
@@ -85,7 +84,8 @@ public:
                 std::array<float, 3> movement,
                 std::array<float, 2> rotation
         ) override {
-                camera.Update(
+                UpdateCameraPro(
+                        &camera,
                         Vector3{
                                 movement[0],
                                 movement[1],
@@ -95,7 +95,8 @@ public:
                                 rotation[0],
                                 rotation[1],
                                 0.0f
-                        }
+                        },
+                        1.0f
                 );
                 camera.position = Vector3Add(
                         camera.position,
@@ -104,14 +105,15 @@ public:
         } 
 
         inline void ClearFramebuffer() override {
-                ::ClearBackground(raylib::Color{0xFFFFFFFF});
+                ::ClearBackground(Color{0x00, 0x00, 0x00, 0xFF});
         }
 
         inline void Render(
                 const std::vector<MapObjectInstance>& map_object_instances,
                 const std::vector<size_t>& selected_map_objects_indices
         ) override {
-                camera.BeginMode();
+                rlDisableBackfaceCulling();
+                ::BeginMode3D(camera);
                 {
                         for (MapObjectInstance map_object : map_object_instances) {
                                 DrawModel(
@@ -124,7 +126,7 @@ public:
 
                         // TODO: Highlight selected
                 }
-                camera.EndMode();
+                ::EndMode3D();
         }
 
 };
